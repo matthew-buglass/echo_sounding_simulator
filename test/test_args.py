@@ -14,7 +14,7 @@ class TestArgumentParsing(unittest.TestCase):
         arg_space = parse_args(args)
 
         self.assertSetEqual(set(arg_space.__dict__.keys()), {"errors", "sample_rate", "data_file"})
-        self.assertEqual(arg_space.errors, None)
+        self.assertEqual(arg_space.errors, [])
         self.assertEqual(arg_space.sample_rate, 1)
         self.assertEqual(arg_space.data_file, "test.stl")
 
@@ -29,8 +29,8 @@ class TestArgumentParsing(unittest.TestCase):
         self.assertEqual(arg_space2.sample_rate, 0.1)
 
     def test_one_noise_within_range(self):
-        args1 = ["test.stl", "--errors", "noise=0.05"]
-        args2 = ["test.stl", "-e", "noise=0.1"]
+        args1 = ["test.stl", "--errors", "noise@0.05"]
+        args2 = ["test.stl", "-e", "noise@0.1"]
 
         arg_space1 = parse_args(args1)
         arg_space2 = parse_args(args2)
@@ -39,22 +39,22 @@ class TestArgumentParsing(unittest.TestCase):
         self.assertEqual(arg_space2.errors, [Noise(0.1)])
 
     def test_noise_bigger_than_one_causes_system_exit(self):
-        args1 = ["test.stl", "--errors", "noise=1.001"]
-        args2 = ["test.stl", "-e", "noise=1.5"]
+        args1 = ["test.stl", "--errors", "noise@1.001"]
+        args2 = ["test.stl", "-e", "noise@1.5"]
 
-        self.assertRaises(SystemExit, parse_args, args1)
-        self.assertRaises(SystemExit, parse_args, args2)
+        self.assertRaises(ValueError, parse_args, args1)
+        self.assertRaises(ValueError, parse_args, args2)
 
     def test_noise_smaller_than_zero_causes_system_exit(self):
-        args1 = ["test.stl", "--errors", "noise=-0.5"]
-        args2 = ["test.stl", "-e", "noise=-6"]
+        args1 = ["test.stl", "--errors", "noise@-0.5"]
+        args2 = ["test.stl", "-e", "noise@-6"]
 
-        self.assertRaises(SystemExit, parse_args, args1)
-        self.assertRaises(SystemExit, parse_args, args2)
+        self.assertRaises(ValueError, parse_args, args1)
+        self.assertRaises(ValueError, parse_args, args2)
 
     def test_noise_at_one_and_zero_are_valid(self):
-        args1 = ["test.stl", "--errors", "noise=0"]
-        args2 = ["test.stl", "-e", "noise=1"]
+        args1 = ["test.stl", "--errors", "noise@0"]
+        args2 = ["test.stl", "-e", "noise@1"]
 
         arg_space1 = parse_args(args1)
         arg_space2 = parse_args(args2)
@@ -63,8 +63,8 @@ class TestArgumentParsing(unittest.TestCase):
         self.assertEqual(arg_space2.errors, [Noise(1)])
 
     def test_multiple_noises(self):
-        args1 = ["test.stl", "--errors", "noise=0.05", "noise=0.1", "noise=0.01"]
-        args2 = ["test.stl", "-e", "noise=0.1", "noise=0.006", "-sr=0.1", "--errors", "noise=0.9"]
+        args1 = ["test.stl", "--errors", "noise@0.05", "noise@0.1", "noise@0.01"]
+        args2 = ["test.stl", "-e", "noise@0.1", "noise@0.006", "-sr=0.1", "--errors", "noise@0.9"]
 
         arg_space1 = parse_args(args1)
         arg_space2 = parse_args(args2)

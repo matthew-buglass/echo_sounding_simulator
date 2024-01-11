@@ -5,12 +5,14 @@ from abc import ABC, abstractmethod
 class ErrorType(ABC):
     @abstractmethod
     def eval(self, value):
-        return value
+        raise NotImplementedError
 
 
 class Noise(ErrorType):
     def __init__(self, error_rate):
-        self.err_rate = error_rate / 2
+        if error_rate > 1 or error_rate < 0:
+            raise ValueError("Noise error rate must be between 0 and 1")
+        self.err_rate = error_rate
 
     def eval(self, value):
         adj = random.uniform(-self.err_rate, self.err_rate) * value
@@ -22,5 +24,5 @@ class Noise(ErrorType):
         return False
 
     def __repr__(self):
-        return f"noise({self.err_rate * 2:.2f})"
+        return f"noise({self.err_rate:.2f})"
 
