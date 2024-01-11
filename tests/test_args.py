@@ -72,6 +72,9 @@ class TestArgumentParsing(unittest.TestCase):
         self.assertEqual(arg_space1.errors, [Noise(0.05), Noise(0.1), Noise(0.01)])
         self.assertEqual(arg_space2.errors, [Noise(0.1), Noise(0.006), Noise(0.9)])
 
+    def test_fail(self):
+        self.fail("This is supposed to fail")
+
 
 if __name__ == '__main__':
     unittest.main()
