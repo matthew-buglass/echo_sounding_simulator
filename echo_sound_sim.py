@@ -12,7 +12,7 @@ def find_shallowest_depth(mesh: Trimesh, x: float, y:float):
     :param mesh: A Trimesh object
     :param x: a real x position
     :param y: a real y position
-    :return: a real number that is the z position closest to 0
+    :return: a real number that is the maximum (shallowest) z position
     """
     # Pick the lowest point in the mesh as our starting max
     max_z = mesh.bounds[0, 2]
