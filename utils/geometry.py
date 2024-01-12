@@ -10,7 +10,8 @@ def line_sign(point: tuple[float, float], line_start: tuple[float, float], line_
             (line_start[0] - line_end[0]) * (point[1] - line_end[1]))
 
 
-def point_in_tri(point, v1, v2, v3) -> bool:
+def point_in_tri(point: tuple[float, float], v1: tuple[float, float, float],
+                 v2: tuple[float, float, float], v3: tuple[float, float, float]) -> bool:
     """
     Calculated whether an [x y] point is within the vertical slice of the triangular face
     created by the [x y z] verticies.
