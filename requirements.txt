@@ -1,1 +1,4 @@
 trimesh==4.0.8
+
+# Optional
+pyglet==1.5
