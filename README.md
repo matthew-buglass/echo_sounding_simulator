@@ -1,4 +1,4 @@
-# echo_sounding_simulator
-A simulator for taking echo sounding readings during bathymetric surveys
+# Echo Sounding Simulator
+[![python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 
-Python 3.10 is required
+A simulator for taking echo sounding readings during bathymetric surveys
