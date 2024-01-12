@@ -1,6 +1,6 @@
 import unittest
 
-from utils.geometry import line_sign, point_in_tri
+from utils.geometry import line_sign, point_in_tri, triangular_plane_intercept
 
 
 class TestLineSign(unittest.TestCase):
@@ -43,6 +43,19 @@ class TestInTriangle(unittest.TestCase):
 
     def test_above_left_triangle_fails(self):
         self.assertFalse(point_in_tri((-0.5, 1), self.v1, self.v2, self.v3))
+
+
+class TestTriangularPlaneIntercept(unittest.TestCase):
+    def setUp(self):
+        self.v1 = (1, 2, 3)
+        self.v2 = (1, 0, 1)
+        self.v3 = (-2, 1, 0)
+
+    def test_x_and_y_are_in_bounds(self):
+        self.assertAlmostEquals(1/3, triangular_plane_intercept(0, 0, self.v1, self.v2, self.v3))
+
+    def test_x_and_y_are_out_of_bounds(self):
+        self.assertEqual(3, triangular_plane_intercept(7, -2, self.v1, self.v2, self.v3))
 
 
 if __name__ == '__main__':
