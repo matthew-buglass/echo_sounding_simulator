@@ -1,1 +1,5 @@
 trimesh==4.0.8
+coverage==7.4.0
+
+# Optional
+pyglet==1.5
