@@ -1,29 +1,40 @@
 import sys
+import numpy as np
 from trimesh import load, Trimesh
 
 from utils.cli_parsing import parse_args
 
 
-def triplane_intercept(verts: list, x: float, y:float):
+def triplane_intercept(mesh: Trimesh, face_index: int, x: float, y:float):
     """
-    Calculates the intercept of x and y projected onto the triangular plane created by the three vertices in verts.
-    :param verts: a [3 3] array of x, y, and z position of three vertices that create a plane.
+    Calculates the intercept of a vertical line at x and y onto the triangular plane at the face index.
+    :param face_index: The index of the face to find the intersection
+    :param mesh: A Trimesh object
     :param x: the x point to be projected onto the plane
     :param y: the y point to be projected onto the plane
     :return: the z position of the projected points x and y
     """
-    pass
+    # # pull triangles into the form of an origin + 2 vectors
+    # tri_origins = mesh.vertices[mesh.faces[:, 0]]
+    # tri_vectors = mesh.vertices[mesh.faces[:, 1:]].copy()
+    # tri_vectors -= np.tile(tri_origins, (1, 2)).reshape((-1, 2, 3))
+    #
+    # # pull the vectors for the faces we are going to sample from
+    # tri_origins = tri_origins[face_index]
+    # tri_vectors = tri_vectors[face_index]
 
 
 def find_shallowest_depth(mesh: Trimesh, x: float, y:float):
     """
-    Provide a tri mesh and an x and y position. Returns the shallowest depth (what and echo sounder would find)
+    Provide a tri mesh and an x and y position. Brute force algorithm that returns the shallowest depth
+    (what and echo sounder would find)
     :param mesh: A Trimesh object
     :param x: a real x position
     :param y: a real y position
     :return: a real number that is the z position closest to 0
     """
     pass
+
 
 
 if __name__ == '__main__':
