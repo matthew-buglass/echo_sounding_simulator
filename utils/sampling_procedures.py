@@ -46,7 +46,7 @@ def find_shallowest_depth(mesh: Trimesh, x: float, y: float):
 
 
 def parallel_track_sampling_generator(min_x: float, max_x: float, min_y: float, max_y: float,
-                                      right: tuple[float, float], up: tuple[float, float]) -> tuple[float, float]:
+                                      right: tuple[float, float], up: tuple[float, float]):
     """
     Simulates a zig-zag sampling pattern from the bottom left of the mesh to the top right of a bounding box between the
     points [min_x, min_y] to [max_x max_y]
@@ -56,7 +56,7 @@ def parallel_track_sampling_generator(min_x: float, max_x: float, min_y: float, 
     :param max_y: The largest y position of the mesh
     :param right: The vector for moving to the right
     :param up: The vector for moving up
-    :return:
+    :returns: Successive [x y] positions
     """
     pos = np.array([min_x, min_y])
 

@@ -76,6 +76,7 @@ class TestParallelTrackSamplingGenerator(unittest.TestCase):
             ten_meter_results.extend(down_path)
 
         cls.ten_meter_results = ten_meter_results
+        cls.ten_meter_balanced = [(p[0]-5, p[1]-5) for p in ten_meter_results]
 
     def test_default_movement_is_along_the_one_meter_grid(self):
         args = parse_args(['file.stl'])
@@ -95,6 +96,15 @@ class TestParallelTrackSamplingGenerator(unittest.TestCase):
         self.assertEqual(len(results), len(self.ten_meter_results))
         for i in range(len(self.ten_meter_results)):
             self.assertTupleEqual(results[i], self.ten_meter_results[i])
+
+    def test_mix_of_positive_and_negative_coordinates_work_correctly(self):
+        right, up = calculate_movement_vectors(1, 1)
+
+        results = list(parallel_track_sampling_generator(-5, 4, -5, 4, right, up))
+
+        self.assertEqual(len(results), len(self.ten_meter_balanced))
+        for i in range(len(self.ten_meter_balanced)):
+            self.assertTupleEqual(results[i], self.ten_meter_balanced[i])
 
 
 if __name__ == '__main__':
