@@ -3,7 +3,8 @@ import unittest
 
 import trimesh
 
-from echo_sound_sim import find_shallowest_depth
+from echo_sound_sim import find_shallowest_depth, calculate_movement_vectors
+from utils.cli_parsing import parse_args
 
 
 class TestFindShallowestDepth(unittest.TestCase):
@@ -31,6 +32,31 @@ class TestFindShallowestDepth(unittest.TestCase):
 
     def test_point_outside_of_bounds_returns_none(self):
         self.assertIsNone(find_shallowest_depth(self.mesh, 15, 7))
+
+
+class TestCalculateMovementVectors(unittest.TestCase):
+    def test_default_vector_is_a_change_in_one_meter(self):
+        args = parse_args(['file.stl'])
+        right, up = calculate_movement_vectors(args.sample_rate, args.velocity)
+
+        self.assertEqual((1, 0), right)
+        self.assertEqual((0, 1), up)
+
+    def test_halving_the_sample_rate_doubles_the_distance_between_sample(self):
+        sample_rate = 0.5
+        velocity = 1
+        right, up = calculate_movement_vectors(sample_rate, velocity)
+
+        self.assertEqual((2, 0), right)
+        self.assertEqual((0, 2), up)
+
+    def test_halving_the_velocity_halves_the_distance_between_sample(self):
+        sample_rate = 1
+        velocity = 0.5
+        right, up = calculate_movement_vectors(sample_rate, velocity)
+
+        self.assertEqual((0.5, 0), right)
+        self.assertEqual((0, 0.5), up)
 
 
 if __name__ == '__main__':

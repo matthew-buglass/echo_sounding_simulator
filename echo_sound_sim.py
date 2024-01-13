@@ -31,6 +31,21 @@ def find_shallowest_depth(mesh: Trimesh, x: float, y:float):
     return max_z
 
 
+def calculate_movement_vectors(sample_rate: float, velocity: float) -> tuple[tuple[float, float], tuple[float, float]]:
+    """
+    Returns the [x y] movement vector to apply to the ship's position at each sampling.
+    :param sample_rate: The rate in hertz that we are sampling at
+    :param velocity: The velocity of the vessel in m/s
+    :return: Two vectors [right up] where right moves the ship positively in the x direction and up moves the ship
+    positively in the y direction
+    """
+    factor = velocity / sample_rate
+    right = (1 * factor, 0)
+    up = (0, 1 * factor)
+
+    return right, up
+
+
 if __name__ == '__main__':
     # Get cli arguments
     args = parse_args(sys.argv[1:])
