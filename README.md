@@ -1,4 +1,5 @@
 # Echo Sounding Simulator
-[![python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![Python Tests](https://github.com/matthew-buglass/echo_sounding_simulator/actions/workflows/python-app.yml/badge.svg)](https://github.com/matthew-buglass/echo_sounding_simulator/actions/workflows/python-app.yml)
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg)](https://www.python.org)
 
 A simulator for taking echo sounding readings during bathymetric surveys

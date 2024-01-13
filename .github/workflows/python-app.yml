@@ -77,7 +77,6 @@ jobs:
       - name: "Install dependencies"
         run: |
           python -m pip install tox tox-gh-actions
-          pip freeze
 
       - name: "Download coverage data"
         uses: actions/download-artifact@v3
