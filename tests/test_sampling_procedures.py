@@ -3,7 +3,7 @@ import unittest
 
 import trimesh
 
-from utils import calculate_movement_vectors, find_shallowest_depth, \
+from utils.sampling_procedures import calculate_movement_vectors, find_shallowest_depth, \
     parallel_track_sampling_generator
 from utils.cli_parsing import parse_args
 
