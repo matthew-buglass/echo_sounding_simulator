@@ -33,4 +33,9 @@ def parse_args(args):
                         help="A list describing the error introduction pipeline. Current formats:\n"
                              "\tnoise@0.05 - A random percent of noise present in a sensor. Plus or minus the value.",
                         default=[])
+    parser.add_argument("-vel",
+                        "--velocity",
+                        type=float,
+                        default=1,
+                        help="The velocity of the research vessel in m/s. Defaults to 1 m/s (3.6 km/hr)")
     return parser.parse_args(args)

@@ -13,10 +13,11 @@ class TestArgumentParsing(unittest.TestCase):
         args = ["test.stl"]
         arg_space = parse_args(args)
 
-        self.assertSetEqual(set(arg_space.__dict__.keys()), {"errors", "sample_rate", "data_file"})
+        self.assertSetEqual(set(arg_space.__dict__.keys()), {"errors", "sample_rate", "data_file", "velocity"})
         self.assertEqual(arg_space.errors, [])
         self.assertEqual(arg_space.sample_rate, 1)
         self.assertEqual(arg_space.data_file, "test.stl")
+        self.assertEqual(arg_space.velocity, 1)
 
     def test_custom_sample_rate(self):
         args1 = ["test.stl", "--sample_rate=5"]
@@ -71,6 +72,16 @@ class TestArgumentParsing(unittest.TestCase):
 
         self.assertEqual(arg_space1.errors, [Noise(0.05), Noise(0.1), Noise(0.01)])
         self.assertEqual(arg_space2.errors, [Noise(0.1), Noise(0.006), Noise(0.9)])
+
+    def test_custom_velocity(self):
+        args1 = ["test.stl", "--velocity=5"]
+        args2 = ["test.stl", "-vel=0.1"]
+
+        arg_space1 = parse_args(args1)
+        arg_space2 = parse_args(args2)
+
+        self.assertEqual(arg_space1.velocity, 5.0)
+        self.assertEqual(arg_space2.velocity, 0.1)
 
 
 if __name__ == '__main__':
