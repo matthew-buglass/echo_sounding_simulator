@@ -3,7 +3,8 @@ import unittest
 
 import trimesh
 
-from echo_sound_sim import find_shallowest_depth, calculate_movement_vectors
+from utils.sampling_procedures import calculate_movement_vectors, find_shallowest_depth, \
+    parallel_track_sampling_generator
 from utils.cli_parsing import parse_args
 
 
@@ -57,6 +58,43 @@ class TestCalculateMovementVectors(unittest.TestCase):
 
         self.assertEqual((0.5, 0), right)
         self.assertEqual((0, 0.5), up)
+
+
+class TestParallelTrackSamplingGenerator(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        ten_meter_results = []
+
+        for i in range(0, 10, 2):
+            up_path = []
+            down_path = []
+            for j in range(10):
+                up_path.append((i, j))
+                down_path.insert(0, (i+1, j))
+
+            ten_meter_results.extend(up_path)
+            ten_meter_results.extend(down_path)
+
+        cls.ten_meter_results = ten_meter_results
+
+    def test_default_movement_is_along_the_one_meter_grid(self):
+        args = parse_args(['file.stl'])
+        right, up = calculate_movement_vectors(args.sample_rate, args.velocity)
+
+        results = list(parallel_track_sampling_generator(0, 9, 0, 9, right, up))
+
+        self.assertEqual(len(results), len(self.ten_meter_results))
+        for i in range(len(self.ten_meter_results)):
+            self.assertTupleEqual(results[i], self.ten_meter_results[i])
+
+    def test_extra_half_meter_per_axis_does_not_change_data(self):
+        right, up = calculate_movement_vectors(1, 1)
+
+        results = list(parallel_track_sampling_generator(0, 9.5, 0, 9.5, right, up))
+
+        self.assertEqual(len(results), len(self.ten_meter_results))
+        for i in range(len(self.ten_meter_results)):
+            self.assertTupleEqual(results[i], self.ten_meter_results[i])
 
 
 if __name__ == '__main__':
