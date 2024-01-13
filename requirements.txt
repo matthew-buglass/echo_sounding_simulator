@@ -1,7 +1,7 @@
 trimesh==4.0.8
 numpy==1.26.3
 mkdocs==1.5.3
-"mkdocstrings[python]"
+mkdocstrings-python==1.8.0
 mkdocs-material==9.5.3
 
 # Testing utils
