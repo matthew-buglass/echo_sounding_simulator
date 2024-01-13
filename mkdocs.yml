@@ -1,0 +1,7 @@
+site_name: Echo Sounding Simulator
+
+theme:
+  name: "material"
+
+plugins:
+  - mkdocstrings

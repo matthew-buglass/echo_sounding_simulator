@@ -1,7 +1,7 @@
 import unittest
 
 from utils.cli_parsing import parse_args
-from utils.error_pipeline import Noise
+from utils import Noise
 
 
 class TestArgumentParsing(unittest.TestCase):

@@ -4,7 +4,7 @@ import time
 from trimesh import load
 
 from utils.cli_parsing import parse_args
-from utils.sampling_procedures import calculate_movement_vectors, find_shallowest_depth, \
+from utils import calculate_movement_vectors, find_shallowest_depth, \
     parallel_track_sampling_generator
 
 if __name__ == '__main__':
