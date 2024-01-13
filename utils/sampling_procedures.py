@@ -7,9 +7,13 @@ from utils.geometry import point_in_tri, triangular_plane_intercept
 def calculate_movement_vectors(sample_rate: float, velocity: float) -> tuple[tuple[float, float], tuple[float, float]]:
     """
     Returns the [x y] movement vector to apply to the ship's position at each sampling.
-    :param sample_rate: The rate in hertz that we are sampling at
-    :param velocity: The velocity of the vessel in m/s
-    :return: Two vectors [right up] where right moves the ship positively in the x direction and up moves the ship
+
+    Args:
+        sample_rate: The rate in hertz that we are sampling at
+        velocity: The velocity of the vessel in m/s
+
+    Returns:
+        [right up]: Two vectors [right up] where right moves the ship positively in the x direction and up moves the ship
     positively in the y direction
     """
     factor = velocity / sample_rate
@@ -23,11 +27,14 @@ def find_shallowest_depth(mesh: Trimesh, x: float, y: float):
     """
     Provide a tri mesh and an x and y position. Brute force algorithm that returns the shallowest depth
     (what and echo sounder would find)
-    :param mesh: A Trimesh object
-    :param x: a real x position
-    :param y: a real y position
-    :return: a real number that is the maximum (shallowest) z position, or None if the specified point is
-        outside the mesh
+
+    Args:
+        mesh: A Trimesh object
+        x: a real x position
+        y: a real y position
+
+    Returns:
+        z: a real number that is the maximum (shallowest) z position, or None if the specified point is outside the mesh
     """
     # Pick the lowest point in the mesh as our starting max
     max_z = None
@@ -46,17 +53,21 @@ def find_shallowest_depth(mesh: Trimesh, x: float, y: float):
 
 
 def parallel_track_sampling_generator(min_x: float, max_x: float, min_y: float, max_y: float,
-                                      right: tuple[float, float], up: tuple[float, float]):
+                                      right: tuple[float, float], up: tuple[float, float]) -> tuple[float, float]:
     """
     Simulates a zig-zag sampling pattern from the bottom left of the mesh to the top right of a bounding box between the
     points [min_x, min_y] to [max_x max_y]
-    :param min_x: The smallest x position of the mesh
-    :param max_x: The largest x position of the mesh
-    :param min_y: The smallest y position of the mesh
-    :param max_y: The largest y position of the mesh
-    :param right: The vector for moving to the right
-    :param up: The vector for moving up
-    :returns: Successive [x y] positions
+
+    Args:
+        min_x: The smallest x position of the mesh
+        max_x: The largest x position of the mesh
+        min_y: The smallest y position of the mesh
+        max_y: The largest y position of the mesh
+        right: The vector for moving to the right
+        up: The vector for moving up
+
+    Returns:
+        [x y]: Successive [x y] positions
     """
     pos = np.array([min_x, min_y])
 
