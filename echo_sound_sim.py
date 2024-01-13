@@ -1,35 +1,11 @@
 import sys
-from trimesh import load, Trimesh
+import time
+
+from trimesh import load
 
 from utils.cli_parsing import parse_args
-from utils.geometry import point_in_tri, triangular_plane_intercept
-
-
-def find_shallowest_depth(mesh: Trimesh, x: float, y:float):
-    """
-    Provide a tri mesh and an x and y position. Brute force algorithm that returns the shallowest depth
-    (what and echo sounder would find)
-    :param mesh: A Trimesh object
-    :param x: a real x position
-    :param y: a real y position
-    :return: a real number that is the maximum (shallowest) z position, or None if the specified point is
-        outside the mesh
-    """
-    # Pick the lowest point in the mesh as our starting max
-    max_z = None
-
-    for i, face in enumerate(mesh.faces):
-        v1 = mesh.vertices[face[0]]
-        v2 = mesh.vertices[face[1]]
-        v3 = mesh.vertices[face[2]]
-
-        if point_in_tri((x, y), v1, v2, v3):
-            z = triangular_plane_intercept(x, y, v1, v2, v3)
-            if max_z is None or z > max_z:
-                max_z = z
-
-    return max_z
-
+from utils import calculate_movement_vectors, find_shallowest_depth, \
+    parallel_track_sampling_generator
 
 if __name__ == '__main__':
     # Get cli arguments
@@ -37,12 +13,18 @@ if __name__ == '__main__':
 
     # Import data file
     mesh = load(args.data_file)
+
+    # get movement parameters
     min_x, min_y, _ = mesh.bounds[0]
     max_x, max_y, _ = mesh.bounds[1]
+    right, up = calculate_movement_vectors(args.sample_rate, args.velocity)
 
-    print(f"Min Bounds {min_x} {min_y}")
-    print(f"Min Bounds {max_x} {max_y}")
-    print(f"Point samples \n{mesh.sample(3)}")
+    # calculate wait time
+    wait_secs = 1 / args.sample_rate
 
-    # find a face that contains a point
-    print(f"z at origin {find_shallowest_depth(mesh, 0, 0)}")
+    # Run the sampling
+    for x, y in parallel_track_sampling_generator(min_x, max_x, min_y, max_y, right, up):
+        z = find_shallowest_depth(mesh, x, y)
+        if z is not None:
+            print(f"{x} {y} {z}")
+            time.sleep(wait_secs)
