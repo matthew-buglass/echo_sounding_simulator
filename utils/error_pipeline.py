@@ -52,17 +52,20 @@ class Noise(ErrorType):
         return f"noise({self.err_rate:.2f})"
 
 
-def create_pipeline(errs: list[ErrorType]) -> Callable[[tuple[float, float, float]], tuple[float, float, float]]:
+def run_pipeline(errs: list[ErrorType], vector: tuple[float, float, float], *args, **kwargs) \
+        -> tuple[float, float, float]:
     """
-    Takes a list of error types and build a composite function for the error pipeline
+    Takes a list of error types and runs the provided vector, args, and kwargs, through a pipeline
+    sequentially according to the order of errs
 
     Args:
         errs: a list of ErrorType objects
+        vector: an [x y z] vector to be processed
 
     Returns:
-        pipeline_func: a function that takes a raw [x y z] vector and returns a processed [x y z] vector
+        new_vector: The processed [x y z] vector after being run through the pipeline
     """
-    def pipeline_func(vec): return errs[0].eval(vec)
-    for e in errs[1:]:
-        pipeline_func = e.eval(pipeline_func)
-    return pipeline_func
+    new_vector = vector
+    for e in errs:
+        new_vector = e.eval(new_vector, *args, **kwargs)
+    return new_vector
