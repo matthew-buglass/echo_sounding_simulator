@@ -56,7 +56,7 @@ class TestTriangularPlaneIntercept(unittest.TestCase):
         self.v3 = (-2, 1, 0)
 
     def test_x_and_y_are_in_bounds(self):
-        self.assertAlmostEqual(1/3, triangular_plane_intercept(0, 0, self.v1, self.v2, self.v3))
+        self.assertAlmostEqual(1 / 3, triangular_plane_intercept(0, 0, self.v1, self.v2, self.v3))
 
     def test_x_and_y_are_out_of_bounds(self):
         self.assertEqual(3, triangular_plane_intercept(7, -2, self.v1, self.v2, self.v3))

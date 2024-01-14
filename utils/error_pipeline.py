@@ -1,6 +1,5 @@
 import random
 from abc import ABC, abstractmethod
-from typing import Callable
 
 
 class ErrorType(ABC):

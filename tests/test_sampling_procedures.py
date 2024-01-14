@@ -70,13 +70,13 @@ class TestParallelTrackSamplingGenerator(unittest.TestCase):
             down_path = []
             for j in range(10):
                 up_path.append((i, j))
-                down_path.insert(0, (i+1, j))
+                down_path.insert(0, (i + 1, j))
 
             ten_meter_results.extend(up_path)
             ten_meter_results.extend(down_path)
 
         cls.ten_meter_results = ten_meter_results
-        cls.ten_meter_balanced = [(p[0]-5, p[1]-5) for p in ten_meter_results]
+        cls.ten_meter_balanced = [(p[0] - 5, p[1] - 5) for p in ten_meter_results]
 
     def test_default_movement_is_along_the_one_meter_grid(self):
         args = parse_args(['file.stl'])

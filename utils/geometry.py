@@ -1,8 +1,4 @@
-import logging
-
 import numpy as np
-
-# logger = logging.getLogger(__name__)
 
 
 def line_sign(point: tuple[float, float], line_start: tuple[float, float], line_end: tuple[float, float]) -> float:
