@@ -237,3 +237,4 @@ fabric.properties
 
 # Project Specifics
 data/
+coverage.json

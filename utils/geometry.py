@@ -11,10 +11,13 @@ def line_sign(point: tuple[float, float], line_start: tuple[float, float], line_
         line_end: The other side of the line [x y]
 
     Returns:
-        sign: positive if above the line, negative if below
+        sign: 1 if above the line, -1 if below, 0 if on the line
     """
-    return ((point[0] - line_end[0]) * (line_start[1] - line_end[1]) -
-            (line_start[0] - line_end[0]) * (point[1] - line_end[1]))
+    res = (point[0] - line_end[0]) * (line_start[1] - line_end[1]) - (line_start[0] - line_end[0]) * (point[1] - line_end[1])
+    if res == 0:
+        return 0
+    else:
+        return int(res // abs(res))
 
 
 def point_in_tri(point: tuple[float, float], v1: tuple[float, float, float],
@@ -25,9 +28,9 @@ def point_in_tri(point: tuple[float, float], v1: tuple[float, float, float],
 
     Args:
         point (tuple[float, float]): point of interest
-        v1: vertex
-        v2: vertex
-        v3: vertex
+        v1: [x y z] vector
+        v2: [x y z] vector
+        v3: [x y z] vector
 
     Returns:
         in_tri: a boolean of whether the point is withing the [x y] bound of the face
@@ -36,10 +39,14 @@ def point_in_tri(point: tuple[float, float], v1: tuple[float, float, float],
     d2 = line_sign(point, v2[0:2], v3[0:2])
     d3 = line_sign(point, v3[0:2], v1[0:2])
 
-    has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
-    has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
+    # if the face has 3 identical points
+    if d1 == d2 == d3 == 0:
+        return point[0] == v1[0] and point[1] == v1[1]
+    else:
+        has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
+        has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
 
-    return not (has_pos and has_neg)
+        return not (has_pos and has_neg)
 
 
 def triangular_plane_intercept(x: float, y: float, v1: tuple[float, float, float],
@@ -60,7 +67,7 @@ def triangular_plane_intercept(x: float, y: float, v1: tuple[float, float, float
     vector1 = np.subtract(v1, v2)
     vector2 = np.subtract(v1, v3)
 
-    # Find the coefficients and the intercept of hte equation of the plane
+    # Find the coefficients and the intercept of the equation of the plane
     coef = np.cross(vector1, vector2)
     intercept = np.dot(coef, v1)
 

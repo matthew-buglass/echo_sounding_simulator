@@ -1,7 +1,9 @@
 import numpy as np
 from trimesh import Trimesh
 
+from utils.error_pipeline import run_pipeline
 from utils.geometry import point_in_tri, triangular_plane_intercept
+from utils.timing import timed
 
 
 def calculate_movement_vectors(sample_rate: float, velocity: float) -> tuple[tuple[float, float], tuple[float, float]]:
@@ -86,3 +88,11 @@ def parallel_track_sampling_generator(min_x: float, max_x: float, min_y: float, 
             y_factor = -1 * y_factor
             pos = np.add(pos, np.multiply(y_factor, up))
             pos = np.add(pos, right)
+
+
+@timed
+def process_position(mesh, x, y, error_pipeline):
+    z = find_shallowest_depth(mesh, x, y)
+    if z is not None:
+        return run_pipeline(error_pipeline, (x, y, z))
+    return None
