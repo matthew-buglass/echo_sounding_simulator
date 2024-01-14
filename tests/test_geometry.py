@@ -44,6 +44,10 @@ class TestInTriangle(unittest.TestCase):
     def test_above_left_triangle_fails(self):
         self.assertFalse(point_in_tri((-0.5, 1), self.v1, self.v2, self.v3))
 
+    def test_point_only_valid_when_all_three_vertices_are_the_same_when_point_is_identical_to_vertices(self):
+        self.assertTrue(point_in_tri(self.v1[0:2], self.v1, self.v1, self.v1))
+        self.assertFalse(point_in_tri(self.v2[0:2], self.v1, self.v1, self.v1))
+
 
 class TestTriangularPlaneIntercept(unittest.TestCase):
     def setUp(self):

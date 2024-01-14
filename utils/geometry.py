@@ -36,10 +36,14 @@ def point_in_tri(point: tuple[float, float], v1: tuple[float, float, float],
     d2 = line_sign(point, v2[0:2], v3[0:2])
     d3 = line_sign(point, v3[0:2], v1[0:2])
 
-    has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
-    has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
+    # if the face has 3 identical points
+    if d1 == d2 == d3 == 0:
+        return point == v1[0:2]
+    else:
+        has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
+        has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
 
-    return not (has_pos and has_neg)
+        return not (has_pos and has_neg)
 
 
 def triangular_plane_intercept(x: float, y: float, v1: tuple[float, float, float],
@@ -60,7 +64,7 @@ def triangular_plane_intercept(x: float, y: float, v1: tuple[float, float, float
     vector1 = np.subtract(v1, v2)
     vector2 = np.subtract(v1, v3)
 
-    # Find the coefficients and the intercept of hte equation of the plane
+    # Find the coefficients and the intercept of the equation of the plane
     coef = np.cross(vector1, vector2)
     intercept = np.dot(coef, v1)
 
