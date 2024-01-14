@@ -41,7 +41,7 @@ def point_in_tri(point: tuple[float, float], v1: tuple[float, float, float],
 
     # if the face has 3 identical points
     if d1 == d2 == d3 == 0:
-        return point[0] == v1[0] and point[1] == v1[0]
+        return point[0] == v1[0] and point[1] == v1[1]
     else:
         has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
         has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
