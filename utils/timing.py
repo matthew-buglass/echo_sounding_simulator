@@ -1,9 +1,9 @@
 from functools import wraps
 import time
-from typing import Callable
+from typing import Callable, Any
 
 
-def timed(func: Callable):
+def timed(func: Callable) -> Callable:
     """
     Function decorator for monitoring execution time
 
@@ -14,11 +14,11 @@ def timed(func: Callable):
         result: the result of the function
     """
     @wraps(func)
-    def timeit_wrapper(*args, **kwargs):
+    def timed_wrapper(*args, **kwargs) -> (Any, float):
         start_time = time.perf_counter()
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         total_time = end_time - start_time
         print(f'Function {func.__name__}{args} {kwargs} Took {total_time:.4f} seconds')
         return result
-    return timeit_wrapper
+    return timed_wrapper

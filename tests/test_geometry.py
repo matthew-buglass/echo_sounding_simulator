@@ -5,16 +5,16 @@ from utils.geometry import line_sign, point_in_tri, triangular_plane_intercept
 
 class TestLineSign(unittest.TestCase):
     def test_positive_above_x_axis(self):
-        self.assertTrue(0 < line_sign((0, 1), (-2, 0), (5, 0)))
+        self.assertEqual(1, line_sign((0, 1), (-2, 0), (5, 0)))
 
     def test_negative_below_x_axis(self):
-        self.assertTrue(0 > line_sign((0, -1), (-2, 0), (5, 0)))
+        self.assertEqual(-1, line_sign((0, -1), (-2, 0), (5, 0)))
 
     def test_positive_when_above_arbitrary_line(self):
-        self.assertTrue(0 < line_sign((-5, 5), (0, -3), (1.5, 0)))
+        self.assertEqual(1, line_sign((-5, 5), (0, -3), (1.5, 0)))
 
     def test_negative_when_below_arbitrary_line(self):
-        self.assertTrue(0 > line_sign((10, 3), (0, -3), (1.5, 0)))
+        self.assertEqual(-1, line_sign((10, 3), (0, -3), (1.5, 0)))
 
     def test_zero_when_on_line_is(self):
         self.assertEqual(0, line_sign((5, 7), (0, -3), (1.5, 0)))

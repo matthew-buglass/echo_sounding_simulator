@@ -24,7 +24,14 @@ if __name__ == '__main__':
     wait_secs = 1 / args.sample_rate
 
     # Run the sampling
+    # for x, y in parallel_track_sampling_generator(min_x, max_x, min_y, max_y, right, up):
+    #     new_vector, exec_time = process_position(mesh, x, y, args.errors)
+    #     if new_vector is not None:
+    #         print(new_vector)
+    #     time.sleep(max(wait_secs - exec_time, 0))
+
     for x, y in parallel_track_sampling_generator(min_x, max_x, min_y, max_y, right, up):
         new_vector = process_position(mesh, x, y, args.errors)
-        print(new_vector)
+        if new_vector is not None:
+            print(new_vector)
         time.sleep(wait_secs)
