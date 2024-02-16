@@ -1,6 +1,6 @@
 import argparse
 
-from utils.emitters import StdOutVectorEmitter
+from utils.emitters import StdOutVectorEmitter, CsvVectorEmitter, TsvVectorEmitter, EndpointVectorEmitter
 from utils.error_pipeline import Noise
 
 
@@ -25,13 +25,14 @@ class ParseVectorEmitter(argparse.Action):
         super().__init__(option_strings, dest, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
-        match values:
-            case "file":
-                item = StdOutVectorEmitter()
+        emitter, location = values.split("@")
+        match emitter:
+            case "csv":
+                item = CsvVectorEmitter(location)
+            case "tsv":
+                item = TsvVectorEmitter(location)
             case "endpoint":
-                item = StdOutVectorEmitter()
-            case "stdout":
-                item = StdOutVectorEmitter()
+                item = EndpointVectorEmitter(location)
             case _:
                 item = StdOutVectorEmitter()
 
@@ -45,8 +46,8 @@ def parse_args(args):
     parser.add_argument("-em",
                         "--emitter_type",
                         action=ParseVectorEmitter,
-                        help="Where you want to emit the result vectors.",
-                        choices=["stdout", "file", "endpoint"],
+                        help="Where you want to emit the result vectors, if not to stdout.",
+                        choices=["csv@<filename>", "tsv@<filename>", "endpoint@<url>"],
                         default=StdOutVectorEmitter())
     parser.add_argument("-sr",
                         "--sample_rate",
