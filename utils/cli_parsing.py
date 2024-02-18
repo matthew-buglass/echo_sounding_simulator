@@ -1,5 +1,6 @@
 import argparse
 
+from utils.emitters import StdOutVectorEmitter, CsvVectorEmitter, TsvVectorEmitter, EndpointVectorEmitter
 from utils.error_pipeline import Noise
 
 
@@ -17,10 +18,37 @@ class ParseErrorPipeline(argparse.Action):
         setattr(namespace, self.dest, items)
 
 
+class ParseVectorEmitter(argparse.Action):
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        if nargs is not None:
+            raise ValueError("nargs not allowed")
+        super().__init__(option_strings, dest, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        emitter, location = values.split("@")
+        match emitter:
+            case "csv":
+                item = CsvVectorEmitter(location)
+            case "tsv":
+                item = TsvVectorEmitter(location)
+            case "endpoint":
+                item = EndpointVectorEmitter(location)
+            case _:
+                item = StdOutVectorEmitter()
+
+        setattr(namespace, self.dest, item)
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser()
     parser.add_argument("data_file",
                         help="An 3D data file to represent the surface to sample")
+    parser.add_argument("-em",
+                        "--emitter_type",
+                        action=ParseVectorEmitter,
+                        help="Where you want to emit the result vectors, if not to stdout.\n"
+                             "Your choices are: csv@<filename>, tsv@<filename>, endpoint@<url>",
+                        default=StdOutVectorEmitter())
     parser.add_argument("-sr",
                         "--sample_rate",
                         help="The rate (in Hertz) at which to sample the surface. Defaults to 1hz.",
@@ -38,4 +66,8 @@ def parse_args(args):
                         type=float,
                         default=1,
                         help="The velocity of the research vessel in m/s. Defaults to 1 m/s (3.6 km/hr)")
+    parser.add_argument("--no-wait",
+                        action="store_true",
+                        help="Flag to disable the waiting part off the simulation. If given, the sampling rate "
+                             "will remain the same, but the wait time between samples will be disabled.")
     return parser.parse_args(args)
