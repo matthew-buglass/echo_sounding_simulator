@@ -1,7 +1,7 @@
 import numpy as np
 
 from utils.error_pipeline import run_pipeline
-from utils.geometry import point_in_tri, triangular_plane_intercept
+from utils.geometry import triangular_plane_intercept
 from utils.mesh import CustomTriMesh
 from utils.timing import timed
 
