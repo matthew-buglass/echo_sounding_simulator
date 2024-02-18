@@ -66,4 +66,8 @@ def parse_args(args):
                         type=float,
                         default=1,
                         help="The velocity of the research vessel in m/s. Defaults to 1 m/s (3.6 km/hr)")
+    parser.add_argument("--no-wait",
+                        action="store_true",
+                        help="Flag to disable the waiting part off the simulation. If given, the sampling rate "
+                             "will remain the same, but the wait time between samples will be disabled.")
     return parser.parse_args(args)

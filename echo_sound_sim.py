@@ -12,6 +12,7 @@ if __name__ == '__main__':
 
     # Import data file
     mesh = load(args.data_file)
+    wait = not args.no_wait
 
     # get movement parameters
     min_x, min_y, _ = mesh.bounds[0]
@@ -29,4 +30,5 @@ if __name__ == '__main__':
         if new_vector is not None:
             emitter.emit_vector(new_vector)
             t2 = time.time()
-            time.sleep(max(wait_secs - (t2 - t1), 0))
+            if wait:
+                time.sleep(max(wait_secs - (t2 - t1), 0))
