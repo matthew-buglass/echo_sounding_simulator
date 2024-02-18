@@ -46,8 +46,8 @@ def parse_args(args):
     parser.add_argument("-em",
                         "--emitter_type",
                         action=ParseVectorEmitter,
-                        help="Where you want to emit the result vectors, if not to stdout.",
-                        choices=["csv@<filename>", "tsv@<filename>", "endpoint@<url>"],
+                        help="Where you want to emit the result vectors, if not to stdout.\n"
+                             "Your choices are: csv@<filename>, tsv@<filename>, endpoint@<url>",
                         default=StdOutVectorEmitter())
     parser.add_argument("-sr",
                         "--sample_rate",

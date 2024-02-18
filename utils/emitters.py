@@ -1,4 +1,6 @@
 import abc
+import json
+
 import requests
 
 
@@ -20,7 +22,7 @@ class CsvVectorEmitter(VectorEmitter):
 
     def emit_vector(self, vector):
         out_str = f"{vector[0]},{vector[1]},{vector[2]}\n"
-        with open(self.filename) as f:
+        with open(self.filename, "a+") as f:
             f.write(out_str)
 
 
@@ -31,7 +33,7 @@ class TsvVectorEmitter(VectorEmitter):
 
     def emit_vector(self, vector):
         out_str = f"{vector[0]}\t{vector[1]}\t{vector[2]}\n"
-        with open(self.filename) as f:
+        with open(self.filename, "a+") as f:
             f.write(out_str)
 
 
@@ -41,11 +43,17 @@ class EndpointVectorEmitter(VectorEmitter):
         self.endpoint = endpoint
 
     def emit_vector(self, vector):
-        body = {
+        payload = {
             "x": vector[0],
             "y": vector[1],
             "z": vector[2]
         }
-        requests.put(self.endpoint, data=body)
-        print(vector)
+        response = requests.put(
+            url=self.endpoint,
+            data=json.dumps(payload),
+            headers={
+                "Content-Type": "application/json"
+            }
+        )
+        print(f"Response {response.status_code} from {self.endpoint}\n{json.dumps(response.text, indent=4)}")
 
