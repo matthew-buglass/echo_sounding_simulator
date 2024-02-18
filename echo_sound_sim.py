@@ -31,7 +31,7 @@ if __name__ == '__main__':
     emitter = args.emitter_type
     for x, y in parallel_track_sampling_generator(min_x, max_x, min_y, max_y, right, up):
         t1 = time.time()
-        new_vector, exec_time = process_position(mesh, x, y, args.errors)
+        new_vector = process_position(mesh, x, y, args.errors)
         if new_vector is not None:
             emitter.emit_vector(new_vector)
             t2 = time.time()
