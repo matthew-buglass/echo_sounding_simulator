@@ -38,19 +38,16 @@ def find_shallowest_depth(mesh: CustomTriMesh, x: float, y: float):
     Returns:
         z: a real number that is the maximum (shallowest) z position, or None if the specified point is outside the mesh
     """
-    # Pick the lowest point in the mesh as our starting max
     max_z = None
 
-    for i, face_idx in enumerate(mesh.find_simplices(x, y)):
-        face = mesh.faces[face_idx]
-        v1 = mesh.vertices[face[0]]
-        v2 = mesh.vertices[face[1]]
-        v3 = mesh.vertices[face[2]]
+    for face in mesh.find_simplices(x, y):
+        v1 = face[0]
+        v2 = face[1]
+        v3 = face[2]
 
-        if point_in_tri((x, y), v1, v2, v3):
-            z = triangular_plane_intercept(x, y, v1, v2, v3)
-            if max_z is None or z > max_z:
-                max_z = z
+        z = triangular_plane_intercept(x, y, v1, v2, v3)
+        if max_z is None or z > max_z:
+            max_z = z
 
     return max_z
 

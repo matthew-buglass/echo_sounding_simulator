@@ -1,6 +1,8 @@
 from trimesh import Trimesh
 import numpy as np
 
+from utils.geometry import point_in_tri
+
 
 class CustomTriMesh:
     def __init__(self, mesh: Trimesh, field_split=1000):
@@ -44,29 +46,42 @@ class CustomTriMesh:
             x: x coordinate (numeric)
             y: y coordinate (numeric)
 
-        Raises:
-            IndexError if the x, y point is outside the bounds of the mesh's bounding box
-
         Returns:
-            (x_idx, y_idx)
+            (x_idx, y_idx) if the point is within the bounding box of the mesh, None otherwise
         """
         x_idx = int((x - self.min_x) // self.x_bin_size)
         y_idx = int((y - self.min_y) // self.y_bin_size)
 
         return x_idx, y_idx
 
-    def find_simplices(self, x, y) -> list[int]:
+    def find_simplices(self, x, y) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
         """
-        Finds the indices of the simplicies that are close to being intercepted by the vertical vector at x, y
+        Finds the indices of the simplicies that are intercepted by the vertical vector at x, y
         Args:
             x: x coordinate (numeric)
             y: y coordinate (numeric)
 
+        Raises:
+            IndexError if x of y are outside the bounds of the mesh's bounding box
+
         Returns:
-            A list of face indexes that contain the given point
+            A list of 3-element tuples representing the positions of hte 3 vertices tah make up the
+            simplicies that are intercepted by the vertical vector at x, y.
         """
+        out_simplices = []
         x_idx, y_idx = self._get_bin_indices_(x, y)
-        return self.search_field[x_idx][y_idx]
+
+        if x_idx < self.search_field.shape[0] and y_idx < self.search_field.shape[1]:
+            for face_idx in self.search_field[x_idx][y_idx]:
+                face = self.mesh.faces[face_idx]
+                v1 = self.mesh.vertices[face[0]]
+                v2 = self.mesh.vertices[face[1]]
+                v3 = self.mesh.vertices[face[2]]
+
+                if point_in_tri((x, y), v1, v2, v3):
+                    out_simplices.append((v1, v2, v3))
+
+        return out_simplices
 
     @property
     def bounds(self):

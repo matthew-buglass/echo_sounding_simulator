@@ -3,6 +3,7 @@ import unittest
 
 import trimesh
 
+from utils.mesh import CustomTriMesh
 from utils.sampling_procedures import calculate_movement_vectors, find_shallowest_depth, \
     parallel_track_sampling_generator
 from utils.cli_parsing import parse_args
@@ -13,9 +14,9 @@ class TestFindShallowestDepth(unittest.TestCase):
     def setUpClass(cls):
         cwd = os.path.split(os.getcwd())[-1]
         if cwd == "tests":
-            cls.mesh = trimesh.load(os.path.join(os.getcwd(), "test_data", "test_mesh.stl"))
+            cls.mesh = CustomTriMesh(trimesh.load(os.path.join(os.getcwd(), "test_data", "test_mesh.stl")))
         elif cwd == "echo_sounding_simulator":
-            cls.mesh = trimesh.load(os.path.join(os.getcwd(), "tests", "test_data", "test_mesh.stl"))
+            cls.mesh = CustomTriMesh(trimesh.load(os.path.join(os.getcwd(), "tests", "test_data", "test_mesh.stl")))
         else:
             print(os.getcwd())
             raise EnvironmentError("Improper instantiation. Please run test from echo_sounding_simulator/ or"

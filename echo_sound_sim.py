@@ -12,7 +12,11 @@ if __name__ == '__main__':
     args = parse_args(sys.argv[1:])
 
     # Import data file
+    t1 = time.time()
     mesh = CustomTriMesh(trimesh.load(args.data_file))
+    t2 = time.time()
+    print(f"Took {t2-t1} seconds to instantiate the mesh")
+
     wait = not args.no_wait
 
     # get movement parameters
