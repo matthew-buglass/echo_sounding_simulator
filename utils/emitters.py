@@ -56,4 +56,3 @@ class EndpointVectorEmitter(VectorEmitter):
             }
         )
         print(f"Response {response.status_code} from {self.endpoint}\n{json.dumps(response.text, indent=4)}")
-

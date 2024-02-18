@@ -13,7 +13,12 @@ class TestArgumentParsing(unittest.TestCase):
         args = ["test.stl"]
         arg_space = parse_args(args)
 
-        self.assertSetEqual(set(arg_space.__dict__.keys()), {"errors", "sample_rate", "data_file", "velocity"})
+        self.assertSetEqual(set(arg_space.__dict__.keys()), {"errors",
+                                                             "sample_rate",
+                                                             "data_file",
+                                                             "velocity",
+                                                             "emitter_type",
+                                                             "no_wait"})
         self.assertEqual(arg_space.errors, [])
         self.assertEqual(arg_space.sample_rate, 1)
         self.assertEqual(arg_space.data_file, "test.stl")
