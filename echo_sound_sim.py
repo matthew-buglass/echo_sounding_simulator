@@ -1,9 +1,10 @@
 import sys
 import time
 
-from trimesh import load
+import trimesh
 
 from utils.cli_parsing import parse_args
+from utils.mesh import CustomTriMesh
 from utils.sampling_procedures import calculate_movement_vectors, parallel_track_sampling_generator, process_position
 
 if __name__ == '__main__':
@@ -11,7 +12,7 @@ if __name__ == '__main__':
     args = parse_args(sys.argv[1:])
 
     # Import data file
-    mesh = load(args.data_file)
+    mesh = CustomTriMesh(trimesh.load(args.data_file))
     wait = not args.no_wait
 
     # get movement parameters

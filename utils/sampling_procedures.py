@@ -1,8 +1,8 @@
 import numpy as np
-from trimesh import Trimesh
 
 from utils.error_pipeline import run_pipeline
 from utils.geometry import point_in_tri, triangular_plane_intercept
+from utils.mesh import CustomTriMesh
 from utils.timing import timed
 
 
@@ -25,13 +25,13 @@ def calculate_movement_vectors(sample_rate: float, velocity: float) -> tuple[tup
     return right, up
 
 
-def find_shallowest_depth(mesh: Trimesh, x: float, y: float):
+def find_shallowest_depth(mesh: CustomTriMesh, x: float, y: float):
     """
     Provide a tri mesh and an x and y position. Brute force algorithm that returns the shallowest depth
     (what and echo sounder would find)
 
     Args:
-        mesh: A Trimesh object
+        mesh: A ThreeDimensionalMesh object
         x: a real x position
         y: a real y position
 
@@ -41,7 +41,8 @@ def find_shallowest_depth(mesh: Trimesh, x: float, y: float):
     # Pick the lowest point in the mesh as our starting max
     max_z = None
 
-    for i, face in enumerate(mesh.faces):
+    for i, face_idx in enumerate(mesh.find_simplices(x, y)):
+        face = mesh.faces[face_idx]
         v1 = mesh.vertices[face[0]]
         v2 = mesh.vertices[face[1]]
         v3 = mesh.vertices[face[2]]
