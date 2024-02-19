@@ -43,6 +43,7 @@ class EndpointVectorEmitter(VectorEmitter):
     def __init__(self, endpoint):
         super().__init__()
         self.endpoint = endpoint
+        self.session = requests.Session()
 
     @timed
     def emit_vector(self, vector):
@@ -51,11 +52,12 @@ class EndpointVectorEmitter(VectorEmitter):
             "y": vector[1],
             "z": vector[2]
         }
-        response = requests.put(
+        response = self.session.put(
             url=self.endpoint,
             data=json.dumps(payload),
             headers={
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Connection": "keep-alive"
             }
         )
         print(f"Response {response.status_code} from {self.endpoint}\n{json.dumps(response.text, indent=4)}")
