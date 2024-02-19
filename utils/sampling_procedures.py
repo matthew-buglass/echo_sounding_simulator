@@ -117,9 +117,9 @@ def drawn_path_sampling_generator(path_coords: list[tuple[float, float]], sample
                 direction_array = np.asarray([np.sign(next_step[0] - pos[0]), np.sign(next_step[1] - pos[1])])
 
                 if slope > 0:
-                    movement_vector = np.asarray([np.cos(theta) * dist_to_travel, np.sin(theta) * dist_to_travel])
+                    movement_vector = abs(np.asarray([np.cos(theta) * dist_to_travel, np.sin(theta) * dist_to_travel]))
                 else:
-                    movement_vector = np.asarray([np.sin(theta) * dist_to_travel, np.cos(theta) * dist_to_travel])
+                    movement_vector = abs(np.asarray([np.cos(theta) * dist_to_travel, np.sin(theta) * dist_to_travel]))
 
                 pos = pos + direction_array * movement_vector
                 dist_to_travel = 0

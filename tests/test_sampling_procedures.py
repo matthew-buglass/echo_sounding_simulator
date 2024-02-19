@@ -122,31 +122,31 @@ class TestDrawnPathSamplingGenerator(unittest.TestCase):
         self.assertTupleEqual(expected_points.shape, actual_points.shape)
         self.assertTrue(np.equal(expected_points, actual_points).all())
 
-    # def test_point_along_segment_with_negative_slope_and_moving_right_yields_correctly(self):
-    #     # Setup
-    #     provided_points = [(0, 0), (6, -4.5)]
-    #     expected_points = np.asarray([(0, 0), (4, -3)])
-    #
-    #     # Execute
-    #     generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
-    #     actual_points = np.asarray(list(generator))
-    #
-    #     # Assert
-    #     self.assertTupleEqual(expected_points.shape, actual_points.shape)
-    #     self.assertTrue(np.equal(expected_points, actual_points).all())
-    #
-    # def test_point_along_segment_with_negative_slope_and_moving_left_yields_correctly(self):
-    #     # Setup
-    #     provided_points = [(0, 0), (-6, 4.5)]
-    #     expected_points = np.asarray([(0, 0), (-4, 3)])
-    #
-    #     # Execute
-    #     generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
-    #     actual_points = np.asarray(list(generator))
-    #
-    #     # Assert
-    #     self.assertTupleEqual(expected_points.shape, actual_points.shape)
-    #     self.assertTrue(np.equal(expected_points, actual_points).all())
+    def test_point_along_segment_with_negative_slope_and_moving_right_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (6, -4.5)]
+        expected_points = np.asarray([(0, 0), (4, -3)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_along_segment_with_negative_slope_and_moving_left_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (-6, 4.5)]
+        expected_points = np.asarray([(0, 0), (-4, 3)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
     #
     # def test_point_along_segment_with_no_slope_and_moving_right_yields_correctly(self):
     #     # Setup
