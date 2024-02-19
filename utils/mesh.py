@@ -67,10 +67,26 @@ class CustomTriMesh:
 
         return x_idx, y_idx
 
-    def _x_image_index_to_coordinate(self, x_idx):
+    def _x_image_index_to_coordinate(self, x_idx: int) -> float:
+        """
+        Converts a pixel index into a real x-coordinate
+        Args:
+            x_idx: the width index of an image
+
+        Returns:
+            The real x position value
+        """
         return ((x_idx / self.img_width) * (self.max_x - self.min_x)) + self.min_x
 
-    def _y_image_index_to_coordinate(self, y_idx):
+    def _y_image_index_to_coordinate(self, y_idx: int) -> float:
+        """
+        Converts a pixel index into a real y-coordinate
+        Args:
+            y_idx: the height index of an image
+
+        Returns:
+            The real y position value
+        """
         return ((y_idx / self.img_height) * (self.max_y - self.min_y)) + self.min_y
 
     @timed
@@ -104,7 +120,7 @@ class CustomTriMesh:
         """
         cv2.imshow(self.image_window_name, self.current_image)
 
-    def get_path_over_mesh(self) -> list[tuple[int, int]]:
+    def get_path_over_mesh(self) -> list[tuple[float, float]]:
         """
         Shows a top-down image representation of an image
 

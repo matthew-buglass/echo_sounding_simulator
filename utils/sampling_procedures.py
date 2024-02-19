@@ -61,6 +61,37 @@ def parallel_track_sampling_generator(min_x: float, max_x: float, min_y: float, 
             pos = np.add(pos, right)
 
 
+def drawn_path_sampling_generator(path_coords: list[tuple[float, float]], step_distance: float):
+    assert len(path_coords) >= 2, "A path must have at least two co-ordinates"
+
+    pos = np.asarray(path_coords[0])
+    next_step_idx = 1
+
+    while next_step_idx < len(path_coords):
+        yield pos[0], pos[1]
+
+        # find the next position be walking step_distance along the path
+        dist_to_travel = step_distance
+
+        while dist_to_travel > 0 and next_step_idx < len(path_coords):
+            next_step = np.asarray(path_coords[next_step_idx])
+            dist_to_next_point = np.linalg.norm(pos - next_step)
+
+            if dist_to_next_point < dist_to_travel:
+                dist_to_travel = dist_to_travel - dist_to_next_point
+                pos = next_step
+                next_step_idx += 1
+            elif dist_to_next_point == dist_to_travel:
+                dist_to_travel = 0
+                pos = next_step
+                next_step_idx += 1
+            elif dist_to_next_point > dist_to_travel:
+                square_distances = (pos - next_step) ** 2
+                movement_vector = ((dist_to_travel ** 2) - square_distances) ** 0.5
+                dist_to_travel = 0
+                pos = pos - movement_vector
+
+
 @timed
 def process_position(mesh, x, y, error_pipeline):
     z = mesh.get_shallowest_depth(x, y)
