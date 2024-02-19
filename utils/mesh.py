@@ -1,18 +1,20 @@
 from trimesh import Trimesh
+# import matplotlib.pyplot as plt
+import cv2
 import numpy as np
 
 from utils.geometry import point_in_tri, triangular_plane_intercept
+from utils.timing import timed
 
 
 class CustomTriMesh:
-    def __init__(self, mesh: Trimesh, field_split=1000, build_image=False):
+    @timed
+    def __init__(self, mesh: Trimesh, field_split=1000):
         """
         A utility wrapper for a Trimesh Object
         Args:
             mesh: A Trimesh object that this utilit class wraps
             field_split: an integer value of how many boxes to split the search field into when looking for points
-            build_image: Whether to build an image representation of the mesh (this defaults to false as it adds a
-                non-trivial amount of time to instantiation
         """
         self.mesh = mesh
 
@@ -40,10 +42,10 @@ class CustomTriMesh:
                     else:
                         self.search_field[i][j].append(f)
 
-        # Construct the image representation
+        # Instantiate the meta-data for building the image representation
         self.image = None
-        if build_image:
-            self._build_image_representation_(field_split // 2, field_split // 2)
+        self.img_width = 256
+        self.img_height = 256
 
     def _get_bin_indices_(self, x, y) -> tuple[int, int]:
         """
@@ -61,37 +63,41 @@ class CustomTriMesh:
 
         return x_idx, y_idx
 
-    def _build_image_representation_(self, width: int, height: int) -> None:
+    @timed
+    def _build_image_representation(self) -> None:
         """
         Builds a top-down image representation of the mesh with a given height and width
-
-        Args:
-            width: The number of pixels wide the image should be
-            height: The number of pixels tall the image should be
 
         Returns:
             None
         """
-        self.image = np.zeros((height, width))
+        self.image = np.zeros((self.img_height, self.img_width))
 
-        # Scales the width and height indices to actual values
-        def x_idx_scale(x_idx):
-            return ((x_idx / width) * (self.max_x - self.min_x)) + self.min_x
+        # get actual x and y coordinates
+        x_coords = ((np.asarray(range(self.img_height)) / self.img_width) * (self.max_x - self.min_x)) + self.min_x
+        y_coords = ((np.asarray(range(self.img_width)) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
+        for i, x in enumerate(x_coords):
+            for j, y in enumerate(y_coords):
+                self.image[i][j] = self.get_shallowest_depth(x, y) or self.min_z
 
-        def y_idx_scale(y_idx):
-            return ((y_idx / height) * (self.max_y - self.min_y)) + self.min_y
+        # Scale the image
+        self.image = ((self.image - self.image.min()) * (1/(self.image.max() - self.image.min()) * 255)).astype('uint8')
 
-        # Scales the depth to the range [0, 255] for image display
-        def z_scale(z):
-            return int(((z - self.min_z) / (self.max_z - self.min_z)) * 255)
+    @timed
+    def show_img(self) -> None:
+        """
+        Shows a top-down image representation of an image
 
-        for i in range(height):
-            for j in range(width):
-                x = x_idx_scale(j)
-                y = y_idx_scale(i)
-                shallow_point = self.get_shallowest_depth(x, y)
-                if shallow_point is not None:
-                    self.image[i][j] = z_scale(shallow_point)
+        Returns:
+            None
+        """
+        if self.image is None:
+            self._build_image_representation()
+
+        cv2.namedWindow('depth map')
+        cv2.imshow("depth map", self.image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     def find_simplices(self, x, y) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
         """
