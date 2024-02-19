@@ -72,14 +72,16 @@ class CustomTriMesh:
         x_idx, y_idx = self._get_bin_indices_(x, y)
 
         if x_idx < self.search_field.shape[0] and y_idx < self.search_field.shape[1]:
-            for face_idx in self.search_field[x_idx][y_idx]:
-                face = self.mesh.faces[face_idx]
-                v1 = self.mesh.vertices[face[0]]
-                v2 = self.mesh.vertices[face[1]]
-                v3 = self.mesh.vertices[face[2]]
+            faces = self.search_field[x_idx][y_idx]
+            if faces is not None:
+                for face_idx in self.search_field[x_idx][y_idx]:
+                    face = self.mesh.faces[face_idx]
+                    v1 = self.mesh.vertices[face[0]]
+                    v2 = self.mesh.vertices[face[1]]
+                    v3 = self.mesh.vertices[face[2]]
 
-                if point_in_tri((x, y), v1, v2, v3):
-                    out_simplices.append((v1, v2, v3))
+                    if point_in_tri((x, y), v1, v2, v3):
+                        out_simplices.append((v1, v2, v3))
 
         return out_simplices
 
