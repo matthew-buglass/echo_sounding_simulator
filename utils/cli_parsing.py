@@ -2,6 +2,7 @@ import argparse
 
 from utils.emitters import StdOutVectorEmitter, CsvVectorEmitter, TsvVectorEmitter, EndpointVectorEmitter
 from utils.error_pipeline import Noise
+from utils.sampling_procedures import parallel_track_sampling_generator, drawn_path_sampling_generator
 
 
 class ParseErrorPipeline(argparse.Action):
@@ -19,11 +20,6 @@ class ParseErrorPipeline(argparse.Action):
 
 
 class ParseVectorEmitter(argparse.Action):
-    def __init__(self, option_strings, dest, nargs=None, **kwargs):
-        if nargs is not None:
-            raise ValueError("nargs not allowed")
-        super().__init__(option_strings, dest, **kwargs)
-
     def __call__(self, parser, namespace, values, option_string=None):
         emitter, location = values.split("@")
         match emitter:
@@ -39,10 +35,27 @@ class ParseVectorEmitter(argparse.Action):
         setattr(namespace, self.dest, item)
 
 
+class ParsePathGenerator(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        match values:
+            case "drawn":
+                item = drawn_path_sampling_generator
+            case _:
+                item = parallel_track_sampling_generator
+
+        setattr(namespace, self.dest, item)
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser()
     parser.add_argument("data_file",
                         help="An 3D data file to represent the surface to sample")
+    parser.add_argument("-p",
+                        "--path_type",
+                        action=ParseVectorEmitter,
+                        help="The type of search pattern to use over the mesh",
+                        choices=["parallel", "drawn"],
+                        default=parallel_track_sampling_generator)
     parser.add_argument("-em",
                         "--emitter_type",
                         action=ParseVectorEmitter,
