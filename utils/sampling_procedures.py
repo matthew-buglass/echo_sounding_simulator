@@ -110,6 +110,8 @@ def drawn_path_sampling_generator(path_coords: list[tuple[float, float]], sample
                 dist_to_travel = 0
                 pos = next_step
                 next_step_idx += 1
+                if next_step_idx == len(path_coords):
+                    yield pos[0], pos[1]
             # If the distance we need to travel lands us in the middle of the current segment
             elif dist_to_next_point > dist_to_travel:
                 slope = (pos[1] - next_step[1]) / (pos[0] - next_step[0])

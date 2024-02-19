@@ -83,14 +83,13 @@ class TestDrawnPathSamplingGenerator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.sample_rate = 1
-        cls.velocity = 1
 
     def test_one_point_raises_assertion_error(self):
         # Setup
         provided_points = [(0, 0)]
 
         # Execute
-        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, self.velocity)
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
 
         # Assert
         with self.assertRaises(AssertionError):
@@ -201,16 +200,56 @@ class TestDrawnPathSamplingGenerator(unittest.TestCase):
         self.assertTrue(np.equal(expected_points, actual_points).all())
 
     def test_point_at_end_of_segment_yields_correctly(self):
-        self.fail("not implemented")
+        # Setup
+        provided_points = [(0, 0), (0, -5)]
+        expected_points = np.asarray([(0, 0), (0, -5)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
 
     def test_point_past_one_segment_yields_correctly(self):
-        self.fail("not implemented")
+        # Setup
+        provided_points = [(0, 0), (0, -3), (0, 0)]
+        expected_points = np.asarray([(0, 0), (0, -1)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
 
     def test_point_past_several_segments_yields_correctly(self):
-        self.fail("not implemented")
+        # Setup
+        provided_points = [(0, 0), (4, 3), (8, 0), (0, 0)]
+        expected_points = np.asarray([(0, 0), (6, 0)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 12)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
 
     def test_multiple_points_yield_correctly(self):
-        self.fail("not implemented")
+        # Setup
+        provided_points = [(0, 0), (4, 3), (-4, 9), (0, 9), (0, 0)]
+        expected_points = np.asarray([(0, 0), (4, 3), (0, 6), (-4, 9), (0, 8), (0, 3)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
 
 
 if __name__ == '__main__':
