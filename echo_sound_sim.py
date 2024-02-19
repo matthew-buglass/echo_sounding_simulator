@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     # Import data file
     mesh = CustomTriMesh(trimesh.load(args.data_file))
-    mesh.show_img()
+    print(mesh.get_path_over_mesh())
 
     # wait = not args.no_wait
     #

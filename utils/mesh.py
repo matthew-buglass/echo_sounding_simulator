@@ -43,7 +43,11 @@ class CustomTriMesh:
                         self.search_field[i][j].append(f)
 
         # Instantiate the meta-data for building the image representation
-        self.image = None
+        self.original_image = None
+        self.current_image = None
+        self.image_window_name = "Depth Map"
+        self.image_coords = []
+        self.drawing = False
         self.img_width = 256
         self.img_height = 256
 
@@ -81,23 +85,88 @@ class CustomTriMesh:
                 self.image[i][j] = self.get_shallowest_depth(x, y) or self.min_z
 
         # Scale the image
-        self.image = ((self.image - self.image.min()) * (1/(self.image.max() - self.image.min()) * 255)).astype('uint8')
+        self.original_image = ((self.image - self.image.min()) * (1/(self.image.max() - self.image.min()) * 255)).astype('uint8')
 
-    @timed
-    def show_img(self) -> None:
+    def _show_image_(self) -> None:
         """
         Shows a top-down image representation of an image
 
         Returns:
             None
         """
-        if self.image is None:
-            self._build_image_representation()
+        cv2.imshow(self.image_window_name, self.current_image)
 
-        cv2.namedWindow('depth map')
-        cv2.imshow("depth map", self.image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    def get_path_over_mesh(self) -> list[tuple[int, int]]:
+        """
+        Shows a top-down image representation of an image
+
+        Returns:
+            A list of start and end points of a path that the ship will take
+        """
+        if self.original_image is None:
+            self._build_image_representation()
+            self.current_image = self.original_image.copy()
+
+        cv2.namedWindow(self.image_window_name)
+        cv2.setMouseCallback(self.image_window_name, self._read_mouse_inputs_)
+        # record key inputs as long as the window stay open of until q is pressed
+        while cv2.getWindowProperty(self.image_window_name, cv2.WND_PROP_VISIBLE) > 0:
+            self._show_image_()
+            key = cv2.waitKey(1)
+
+            # Close program with keyboard 'q'
+            if key == ord('q'):
+                cv2.destroyAllWindows()
+
+        return self.image_coords
+
+    def _read_mouse_inputs_(self, event, x, y, flags, parameters):
+        """
+        Reads mouse inputs on the mesh image being displayed
+        Args:
+            event: The event thrown by cv2
+            x: the x position of the mouse
+            y: the y position of the mouse
+            flags:
+            parameters:
+
+        Returns:
+
+        """
+        # Start drawing at mouse down
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.drawing = True
+            # The ship's path should be a continuous line, so we will reset the path if a user starts drawing again
+            self.image_coords = []
+            self.current_image = self.original_image.copy()
+            self.image_coords.append((x, y))
+            print(f"started drawing at {(x, y)}")
+
+        # Draw as the mouse is moved
+        elif event == cv2.EVENT_MOUSEMOVE:
+            # Draw line
+            if len(self.image_coords) > 0:
+                if self.drawing:
+                    if self.image_coords[-1] != (x, y):
+                        self.image_coords.append((x, y))
+                        print(f"drawn to {(x, y)}")
+                        cv2.line(self.current_image, self.image_coords[-2], self.image_coords[-1], (0, 0, 0), 2)
+                        self._show_image_()
+        # Stop drawing when the mouse lifts
+        elif event == cv2.EVENT_LBUTTONUP:
+            self.drawing = False
+            self.image_coords.append((x, y))
+            print(f"stopped drawing at {(x, y)}")
+
+            # Draw line
+            cv2.line(self.current_image, self.image_coords[-2], self.image_coords[-1], (0, 0, 0), 2)
+            self._show_image_()
+
+        # Clear drawing boxes on right mouse button click
+        elif event == cv2.EVENT_RBUTTONDOWN:
+            self.image_coords = []
+            self.current_image = self.original_image.copy()
+            self._show_image_()
 
     def find_simplices(self, x, y) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
         """
