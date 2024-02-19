@@ -67,6 +67,12 @@ class CustomTriMesh:
 
         return x_idx, y_idx
 
+    def _x_image_index_to_coordinate(self, x_idx):
+        return ((x_idx / self.img_width) * (self.max_x - self.min_x)) + self.min_x
+
+    def _y_image_index_to_coordinate(self, y_idx):
+        return ((y_idx / self.img_height) * (self.max_y - self.min_y)) + self.min_y
+
     @timed
     def _build_image_representation(self) -> None:
         """
@@ -78,14 +84,16 @@ class CustomTriMesh:
         self.image = np.zeros((self.img_height, self.img_width))
 
         # get actual x and y coordinates
-        x_coords = ((np.asarray(range(self.img_height)) / self.img_width) * (self.max_x - self.min_x)) + self.min_x
-        y_coords = ((np.asarray(range(self.img_width)) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
+        x_coords = self._x_image_index_to_coordinate(np.asarray(range(self.img_height)))
+        y_coords = self._y_image_index_to_coordinate(np.asarray(range(self.img_width)))
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
                 self.image[i][j] = self.get_shallowest_depth(x, y) or self.min_z
 
         # Scale the image
-        self.original_image = ((self.image - self.image.min()) * (1/(self.image.max() - self.image.min()) * 255)).astype('uint8')
+        self.original_image = (
+                (self.image - self.image.min()) * (1/(self.image.max() - self.image.min()) * 255)
+        ).astype('uint8')
 
     def _show_image_(self) -> None:
         """
@@ -118,7 +126,9 @@ class CustomTriMesh:
             if key == ord('q'):
                 cv2.destroyAllWindows()
 
-        return self.image_coords
+        return [
+            (self._x_image_index_to_coordinate(x), self._y_image_index_to_coordinate(y)) for x, y in self.image_coords
+        ]
 
     def _read_mouse_inputs_(self, event, x, y, flags, parameters):
         """
