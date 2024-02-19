@@ -3,6 +3,8 @@ import json
 
 import requests
 
+from utils.timing import timed
+
 
 class VectorEmitter:
     @abc.abstractmethod
@@ -42,6 +44,7 @@ class EndpointVectorEmitter(VectorEmitter):
         super().__init__()
         self.endpoint = endpoint
 
+    @timed
     def emit_vector(self, vector):
         payload = {
             "x": vector[0],

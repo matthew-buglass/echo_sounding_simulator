@@ -1,9 +1,10 @@
 import sys
 import time
 
-from trimesh import load
+import trimesh
 
 from utils.cli_parsing import parse_args
+from utils.mesh import CustomTriMesh
 from utils.sampling_procedures import calculate_movement_vectors, parallel_track_sampling_generator, process_position
 
 if __name__ == '__main__':
@@ -11,7 +12,11 @@ if __name__ == '__main__':
     args = parse_args(sys.argv[1:])
 
     # Import data file
-    mesh = load(args.data_file)
+    t1 = time.time()
+    mesh = CustomTriMesh(trimesh.load(args.data_file))
+    t2 = time.time()
+    print(f"Took {t2-t1} seconds to instantiate the mesh")
+
     wait = not args.no_wait
 
     # get movement parameters
@@ -26,7 +31,7 @@ if __name__ == '__main__':
     emitter = args.emitter_type
     for x, y in parallel_track_sampling_generator(min_x, max_x, min_y, max_y, right, up):
         t1 = time.time()
-        new_vector, exec_time = process_position(mesh, x, y, args.errors)
+        new_vector = process_position(mesh, x, y, args.errors)
         if new_vector is not None:
             emitter.emit_vector(new_vector)
             t2 = time.time()
