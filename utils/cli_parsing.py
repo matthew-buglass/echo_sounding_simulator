@@ -2,8 +2,7 @@ import argparse
 
 from utils.emitters import StdOutVectorEmitter, CsvVectorEmitter, TsvVectorEmitter, EndpointVectorEmitter
 from utils.error_pipeline import Noise
-from utils.sampling_procedures import parallel_track_sampling_generator, drawn_path_sampling_generator, PathGenerators, \
-    PATH_GENERATORS
+from utils.sampling_procedures import PATH_GENERATORS
 
 
 class ParseErrorPipeline(argparse.Action):
