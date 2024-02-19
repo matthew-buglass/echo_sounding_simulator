@@ -1,3 +1,5 @@
+from enum import Enum
+
 import numpy as np
 
 from utils.error_pipeline import run_pipeline
@@ -136,3 +138,9 @@ def process_position(mesh, x, y, error_pipeline):
     if z is not None:
         return run_pipeline(error_pipeline, (x, y, z))
     return None
+
+
+PATH_GENERATORS = {
+    "parallel": parallel_track_sampling_generator,
+    "drawn": drawn_path_sampling_generator
+}
