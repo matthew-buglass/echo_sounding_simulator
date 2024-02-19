@@ -25,33 +25,6 @@ def calculate_movement_vectors(sample_rate: float, velocity: float) -> tuple[tup
     return right, up
 
 
-def find_shallowest_depth(mesh: CustomTriMesh, x: float, y: float):
-    """
-    Provide a tri mesh and an x and y position. Brute force algorithm that returns the shallowest depth
-    (what and echo sounder would find)
-
-    Args:
-        mesh: A ThreeDimensionalMesh object
-        x: a real x position
-        y: a real y position
-
-    Returns:
-        z: a real number that is the maximum (shallowest) z position, or None if the specified point is outside the mesh
-    """
-    max_z = None
-
-    for face in mesh.find_simplices(x, y):
-        v1 = face[0]
-        v2 = face[1]
-        v3 = face[2]
-
-        z = triangular_plane_intercept(x, y, v1, v2, v3)
-        if max_z is None or z > max_z:
-            max_z = z
-
-    return max_z
-
-
 def parallel_track_sampling_generator(min_x: float, max_x: float, min_y: float, max_y: float,
                                       right: tuple[float, float], up: tuple[float, float]) -> tuple[float, float]:
     """
@@ -90,7 +63,7 @@ def parallel_track_sampling_generator(min_x: float, max_x: float, min_y: float, 
 
 @timed
 def process_position(mesh, x, y, error_pipeline):
-    z = find_shallowest_depth(mesh, x, y)
+    z = mesh.get_shallowest_depth(x, y)
     if z is not None:
         return run_pipeline(error_pipeline, (x, y, z))
     return None
