@@ -48,8 +48,11 @@ class CustomTriMesh:
         self.image_window_name = "Depth Map"
         self.image_coords = []
         self.drawing = False
-        self.img_width = 256
-        self.img_height = 256
+
+        num_pixels = 256
+        aspect_ratio = (self.max_x - self.min_x) / (self.max_y - self.min_y)
+        self.img_width = int(num_pixels * aspect_ratio)
+        self.img_height = int(num_pixels * (1 / aspect_ratio))
 
     def _get_bin_indices_(self, x, y) -> tuple[int, int]:
         """
@@ -67,7 +70,7 @@ class CustomTriMesh:
 
         return x_idx, y_idx
 
-    def _x_image_index_to_coordinate(self, x_idx: int) -> float:
+    def _x_image_index_to_coordinate_build(self, x_idx: int) -> float:
         """
         Converts a pixel index into a real x-coordinate
         Args:
@@ -78,7 +81,7 @@ class CustomTriMesh:
         """
         return ((x_idx / self.img_width) * (self.max_x - self.min_x)) + self.min_x
 
-    def _y_image_index_to_coordinate(self, y_idx: int) -> float:
+    def _y_image_index_to_coordinate_build(self, y_idx: int) -> float:
         """
         Converts a pixel index into a real y-coordinate
         Args:
@@ -88,6 +91,30 @@ class CustomTriMesh:
             The real y position value
         """
         return ((y_idx / self.img_height) * (self.max_y - self.min_y)) + self.min_y
+
+    def _x_image_index_to_coordinate_display(self, x_idx: int) -> float:
+        """
+        Converts a pixel index into a real x-coordinate
+        Args:
+            x_idx: the width index of an image
+
+        Returns:
+            The real x position value
+        """
+        return self._x_image_index_to_coordinate_build(x_idx)
+
+    def _y_image_index_to_coordinate_display(self, y_idx: int) -> float:
+        """
+        Converts a pixel index into a real y-coordinate
+        Args:
+            y_idx: the height index of an image
+
+        Returns:
+            The real y position value
+        """
+        # We have to flip the y position, as images index (0,0) in top left,
+        # while cartesian normal origin is bottom left
+        return (((self.img_height - y_idx) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
 
     @timed
     def _build_image_representation(self) -> None:
@@ -100,8 +127,8 @@ class CustomTriMesh:
         self.image = np.zeros((self.img_height, self.img_width))
 
         # get actual x and y coordinates
-        x_coords = self._x_image_index_to_coordinate(np.asarray(range(self.img_height)))
-        y_coords = self._y_image_index_to_coordinate(np.asarray(range(self.img_width)))
+        x_coords = self._x_image_index_to_coordinate_build(np.asarray(range(self.img_height)))
+        y_coords = self._y_image_index_to_coordinate_build(np.asarray(range(self.img_width)))
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
                 self.image[i][j] = self.get_shallowest_depth(x, y) or self.min_z
@@ -143,7 +170,8 @@ class CustomTriMesh:
                 cv2.destroyAllWindows()
 
         return [
-            (self._x_image_index_to_coordinate(x), self._y_image_index_to_coordinate(y)) for x, y in self.image_coords
+            (self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y))
+            for x, y in self.image_coords
         ]
 
     def _read_mouse_inputs_(self, event, x, y, flags, parameters):
