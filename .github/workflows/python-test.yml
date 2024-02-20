@@ -57,7 +57,7 @@ jobs:
     name: Coverage
     needs: tests
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+#    if: github.ref == 'refs/heads/master'
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v3"
@@ -91,7 +91,7 @@ jobs:
           # GIST_TOKEN is a GitHub personal access token with scope "gist".
           auth: ${{ secrets.GIST_TOKEN }}
           gistID: b88855f7e79729fc1cf9bd4b582012ba
-          filename: covbadge.json
+          filename: covbadge_test.json
           label: Coverage
           message: ${{ env.total }}%
           minColorRange: 50
