@@ -3,7 +3,7 @@ from trimesh import Trimesh
 import cv2
 import numpy as np
 
-from utils.geometry import point_in_tri, triangular_plane_intercept
+from utils.geometry import point_in_tri, triangular_plane_intercept, get_rotated_vector
 from utils.timing import timed
 
 
@@ -131,7 +131,8 @@ class CustomTriMesh:
         y_coords = self._y_image_index_to_coordinate_build(np.asarray(range(self.img_width)))
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
-                self.image[i][j] = self.get_shallowest_depth(x, y) or self.min_z
+                rotated_vector = get_rotated_vector(np.asarray([x, y]), -(np.pi / 2))
+                self.image[i][j] = self.get_shallowest_depth(rotated_vector[0], rotated_vector[1]) or self.min_z
 
         # Scale the image
         self.original_image = (
@@ -154,7 +155,12 @@ class CustomTriMesh:
             A list of start and end points of a path that the ship will take
         """
         return [
-            (self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y))
+            get_rotated_vector(
+                np.asarray(
+                    [self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y)]
+                ),
+                np.pi / 2
+            )
             for x, y in self.image_coords
         ]
 
