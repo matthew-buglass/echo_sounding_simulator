@@ -1,39 +1,10 @@
-import os
 import unittest
 
-import trimesh
+import numpy as np
 
-from utils.mesh import CustomTriMesh
-from utils.sampling_procedures import calculate_movement_vectors, find_shallowest_depth, \
-    parallel_track_sampling_generator
+from utils.sampling_procedures import calculate_movement_vectors, \
+    parallel_track_sampling_generator, drawn_path_sampling_generator
 from utils.cli_parsing import parse_args
-
-
-class TestFindShallowestDepth(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cwd = os.path.split(os.getcwd())[-1]
-        if cwd == "tests":
-            cls.mesh = CustomTriMesh(trimesh.load(os.path.join(os.getcwd(), "test_data", "test_mesh.stl")))
-        elif cwd == "echo_sounding_simulator":
-            cls.mesh = CustomTriMesh(trimesh.load(os.path.join(os.getcwd(), "tests", "test_data", "test_mesh.stl")))
-        else:
-            print(os.getcwd())
-            raise EnvironmentError("Improper instantiation. Please run test from echo_sounding_simulator/ or"
-                                   "echo_sounding_simulator/tests/")
-
-    def test_point_with_one_face_returns_correct_depth(self):
-        # 4 decimal places is considered adequate, as the mesh is in reference to the meter. Therefore, 3
-        # decimal places gives us depth accuracy down to the millimeter
-        self.assertAlmostEqual(-1.33613, find_shallowest_depth(self.mesh, 4.27498, -1.95354), places=3)
-
-    def test_point_with_multiple_faces_returns_correct_depth(self):
-        # 4 decimal places is considered adequate, as the mesh is in reference to the meter. Therefore, 3
-        # decimal places gives us depth accuracy down to the millimeter
-        self.assertAlmostEqual(0, find_shallowest_depth(self.mesh, 0, 0), places=3)
-
-    def test_point_outside_of_bounds_returns_none(self):
-        self.assertIsNone(find_shallowest_depth(self.mesh, 15, 7))
 
 
 class TestCalculateMovementVectors(unittest.TestCase):
@@ -81,31 +52,201 @@ class TestParallelTrackSamplingGenerator(unittest.TestCase):
 
     def test_default_movement_is_along_the_one_meter_grid(self):
         args = parse_args(['file.stl'])
-        right, up = calculate_movement_vectors(args.sample_rate, args.velocity)
 
-        results = list(parallel_track_sampling_generator(0, 9, 0, 9, right, up))
+        results = list(parallel_track_sampling_generator(
+            0, 9, 0, 9, args.sample_rate, args.velocity)
+        )
 
         self.assertEqual(len(results), len(self.ten_meter_results))
         for i in range(len(self.ten_meter_results)):
             self.assertTupleEqual(results[i], self.ten_meter_results[i])
 
     def test_extra_half_meter_per_axis_does_not_change_data(self):
-        right, up = calculate_movement_vectors(1, 1)
-
-        results = list(parallel_track_sampling_generator(0, 9.5, 0, 9.5, right, up))
+        results = list(parallel_track_sampling_generator(0, 9.5, 0, 9.5, 1, 1))
 
         self.assertEqual(len(results), len(self.ten_meter_results))
         for i in range(len(self.ten_meter_results)):
             self.assertTupleEqual(results[i], self.ten_meter_results[i])
 
     def test_mix_of_positive_and_negative_coordinates_work_correctly(self):
-        right, up = calculate_movement_vectors(1, 1)
-
-        results = list(parallel_track_sampling_generator(-5, 4, -5, 4, right, up))
+        results = list(parallel_track_sampling_generator(-5, 4, -5, 4, 1, 1))
 
         self.assertEqual(len(results), len(self.ten_meter_balanced))
         for i in range(len(self.ten_meter_balanced)):
             self.assertTupleEqual(results[i], self.ten_meter_balanced[i])
+
+
+class TestDrawnPathSamplingGenerator(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.sample_rate = 1
+
+    def test_one_point_raises_assertion_error(self):
+        # Setup
+        provided_points = [(0, 0)]
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+
+        # Assert
+        with self.assertRaises(AssertionError):
+            list(generator)
+
+    def test_point_along_segment_with_positive_slope_and_moving_right_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (6, 4.5)]
+        expected_points = np.asarray([(0, 0), (4, 3)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_along_segment_with_positive_slope_and_moving_left_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (-6, -4.5)]
+        expected_points = np.asarray([(0, 0), (-4, -3)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_along_segment_with_negative_slope_and_moving_right_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (6, -4.5)]
+        expected_points = np.asarray([(0, 0), (4, -3)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_along_segment_with_negative_slope_and_moving_left_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (-6, 4.5)]
+        expected_points = np.asarray([(0, 0), (-4, 3)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_along_horizontal_segment_and_moving_right_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (6, 0)]
+        expected_points = np.asarray([(0, 0), (5, 0)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_along_horizontal_segment_and_moving_left_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (-6, 0)]
+        expected_points = np.asarray([(0, 0), (-5, 0)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_along_vertical_segment_and_moving_up_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (0, 6)]
+        expected_points = np.asarray([(0, 0), (0, 5)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_along_vertical_segment_and_moving_down_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (0, -6)]
+        expected_points = np.asarray([(0, 0), (0, -5)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_at_end_of_segment_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (0, -5)]
+        expected_points = np.asarray([(0, 0), (0, -5)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_past_one_segment_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (0, -3), (0, 0)]
+        expected_points = np.asarray([(0, 0), (0, -1)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_point_past_several_segments_yields_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (4, 3), (8, 0), (0, 0)]
+        expected_points = np.asarray([(0, 0), (6, 0)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 12)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
+
+    def test_multiple_points_yield_correctly(self):
+        # Setup
+        provided_points = [(0, 0), (4, 3), (-4, 9), (0, 9), (0, 0)]
+        expected_points = np.asarray([(0, 0), (4, 3), (0, 6), (-4, 9), (0, 8), (0, 3)])
+
+        # Execute
+        generator = drawn_path_sampling_generator(provided_points, self.sample_rate, 5)
+        actual_points = np.asarray(list(generator))
+
+        # Assert
+        self.assertTupleEqual(expected_points.shape, actual_points.shape)
+        self.assertTrue(np.equal(expected_points, actual_points).all())
 
 
 if __name__ == '__main__':

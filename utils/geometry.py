@@ -74,3 +74,12 @@ def triangular_plane_intercept(x: float, y: float, v1: tuple[float, float, float
     # Calculate z
     z = (intercept - (coef[0] * x + coef[1] * y)) / coef[2]
     return z
+
+
+def get_rotated_vector(vector, theta):
+    R = np.asarray([
+        [np.cos(theta), -np.sin(theta)],
+        [np.sin(theta), np.cos(theta)]
+    ])
+    rotated_vector = np.dot(R, np.atleast_2d(vector).T)
+    return np.atleast_1d(rotated_vector).T[0]

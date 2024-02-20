@@ -2,6 +2,7 @@ import argparse
 
 from utils.emitters import StdOutVectorEmitter, CsvVectorEmitter, TsvVectorEmitter, EndpointVectorEmitter
 from utils.error_pipeline import Noise
+from utils.sampling_procedures import PATH_GENERATORS
 
 
 class ParseErrorPipeline(argparse.Action):
@@ -19,11 +20,6 @@ class ParseErrorPipeline(argparse.Action):
 
 
 class ParseVectorEmitter(argparse.Action):
-    def __init__(self, option_strings, dest, nargs=None, **kwargs):
-        if nargs is not None:
-            raise ValueError("nargs not allowed")
-        super().__init__(option_strings, dest, **kwargs)
-
     def __call__(self, parser, namespace, values, option_string=None):
         emitter, location = values.split("@")
         match emitter:
@@ -43,6 +39,11 @@ def parse_args(args):
     parser = argparse.ArgumentParser()
     parser.add_argument("data_file",
                         help="An 3D data file to represent the surface to sample")
+    parser.add_argument("-p",
+                        "--path_type",
+                        help="The type of search pattern to use over the mesh",
+                        default="parallel",
+                        choices=PATH_GENERATORS.keys())
     parser.add_argument("-em",
                         "--emitter_type",
                         action=ParseVectorEmitter,
