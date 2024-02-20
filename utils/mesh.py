@@ -135,9 +135,7 @@ class CustomTriMesh:
                 self.image[i][j] = self.get_shallowest_depth(rotated_vector[0], rotated_vector[1]) or self.min_z
 
         # Scale the image
-        self.original_image = (
-                (self.image - self.image.min()) * (1/(self.image.max() - self.image.min()) * 255)
-        ).astype('uint8')
+        self.original_image = (self.image - self.image.min()) * (1 / (self.image.max() - self.image.min()) * 255).astype('uint8')
 
     def _show_image_(self) -> None:
         """

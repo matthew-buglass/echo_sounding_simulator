@@ -18,7 +18,8 @@ class TestArgumentParsing(unittest.TestCase):
                                                              "data_file",
                                                              "velocity",
                                                              "emitter_type",
-                                                             "no_wait"})
+                                                             "no_wait",
+                                                             "path_type"})
         self.assertEqual(arg_space.errors, [])
         self.assertEqual(arg_space.sample_rate, 1)
         self.assertEqual(arg_space.data_file, "test.stl")

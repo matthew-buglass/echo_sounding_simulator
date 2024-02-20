@@ -1,5 +1,3 @@
-from enum import Enum
-
 import numpy as np
 
 from utils.error_pipeline import run_pipeline

@@ -5,7 +5,7 @@ import trimesh
 
 from utils.cli_parsing import parse_args
 from utils.mesh import CustomTriMesh
-from utils.sampling_procedures import calculate_movement_vectors, parallel_track_sampling_generator, process_position, \
+from utils.sampling_procedures import parallel_track_sampling_generator, process_position, \
     drawn_path_sampling_generator
 
 if __name__ == '__main__':
