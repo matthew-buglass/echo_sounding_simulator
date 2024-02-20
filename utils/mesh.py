@@ -147,6 +147,17 @@ class CustomTriMesh:
         """
         cv2.imshow(self.image_window_name, self.current_image)
 
+    def _process_out_coordinates_(self) -> list[tuple[float, float]]:
+        """
+        Processes image path coordinates into cartesian coordinates
+        Returns:
+            A list of start and end points of a path that the ship will take
+        """
+        return [
+            (self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y))
+            for x, y in self.image_coords
+        ]
+
     def get_path_over_mesh(self) -> list[tuple[float, float]]:
         """
         Shows a top-down image representation of an image
@@ -169,10 +180,7 @@ class CustomTriMesh:
             if key == ord('q'):
                 cv2.destroyAllWindows()
 
-        return [
-            (self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y))
-            for x, y in self.image_coords
-        ]
+        return self._process_out_coordinates_()
 
     def _read_mouse_inputs_(self, event, x, y, flags, parameters):
         """

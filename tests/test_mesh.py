@@ -1,12 +1,13 @@
 import os
 import unittest
 
+import numpy as np
 import trimesh
 
 from utils.mesh import CustomTriMesh
 
 
-class TestFindShallowestDepth(unittest.TestCase):
+class TestMesh(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cwd = os.path.split(os.getcwd())[-1]
@@ -31,6 +32,28 @@ class TestFindShallowestDepth(unittest.TestCase):
 
     def test_point_outside_of_bounds_returns_none(self):
         self.assertIsNone(self.mesh.get_shallowest_depth(15, 7))
+
+    def test_image_to_cartesian_coordinates_are_correct(self):
+        # Setup
+        self.mesh.image_coords = [
+            (0, 0),
+            (self.mesh.img_width, 0),
+            (self.mesh.img_height, self.mesh.img_width),
+            (0, self.mesh.img_height)
+        ]
+        expected_coords = np.asarray([
+            (-10, 10),
+            (10, 10),
+            (10, -10),
+            (-10, -10)
+        ])
+
+        # Execute
+        actual_coords = np.asarray(self.mesh._process_out_coordinates_())
+
+        # Assert
+        self.assertTupleEqual(expected_coords.shape, actual_coords.shape)
+        self.assertTrue(np.equal(expected_coords, actual_coords).all())
 
 
 if __name__ == '__main__':
