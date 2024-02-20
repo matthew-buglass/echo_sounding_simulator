@@ -155,12 +155,7 @@ class CustomTriMesh:
             A list of start and end points of a path that the ship will take
         """
         return [
-            get_rotated_vector(
-                np.asarray(
-                    [self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y)]
-                ),
-                np.pi / 2
-            )
+            (self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y))
             for x, y in self.image_coords
         ]
 
