@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from utils.geometry import get_rotated_vector, point_in_tri
+from utils.geometry import get_x_y_rotated_vector, point_in_tri
 
 
 class ErrorType(ABC):
@@ -76,7 +76,7 @@ class FalseBottom(ErrorType):
         self.debris_tris = []
         self.depth = 0
 
-    def _init_debris_(self, min_x: float, min_y: float, max_x: float, max_y: float) -> None:
+    def init_debris(self, min_x: float, min_y: float, max_x: float, max_y: float) -> None:
         """
         Initializes the debris
         Args:
@@ -90,21 +90,22 @@ class FalseBottom(ErrorType):
         """
         random.seed(self.seed)
 
+        # get a random point in the mesh
         p1 = np.asarray([random.random() * (max_x - min_x) + min_x, random.random() * (max_y - min_y) + min_y])
 
         # Random rotation around p1
         p2_theta = random.random() * 2 * np.pi
-        p2_translation = get_rotated_vector(np.asarray([0, self.length]), p2_theta)
+        p2_translation = get_x_y_rotated_vector(np.asarray([0, self.length]), p2_theta)
         p2 = p1 + p2_translation
 
         # 90-degree corner for the P2-P1-P3 angle
         p3_theta = p2_theta - np.pi / 2
-        p3_translation = get_rotated_vector(np.asarray([0, self.width]), p3_theta)
+        p3_translation = get_x_y_rotated_vector(np.asarray([0, self.width]), p3_theta)
         p3 = p1 + p3_translation
 
         # 45-degree corner for the P2-P1-P4 angle with the P1-P4 line being the center
         p4_theta = p2_theta - np.pi / 4
-        p4_translation = get_rotated_vector(np.asarray([0, np.linalg.norm([self.width, self.length])]), p4_theta)
+        p4_translation = get_x_y_rotated_vector(np.asarray([0, np.linalg.norm([self.width, self.length])]), p4_theta)
         p4 = p1 + p4_translation
 
         # Triangles that form the rectangle:
