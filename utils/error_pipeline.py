@@ -1,6 +1,10 @@
 import random
 from abc import ABC, abstractmethod
 
+import numpy as np
+
+from utils.geometry import get_rotated_vector
+
 
 class ErrorType(ABC):
     @abstractmethod
@@ -17,13 +21,15 @@ class ErrorType(ABC):
 
 
 class Noise(ErrorType):
-    def __init__(self, error_rate):
+    def __init__(self, error_rate, *args, **kwargs):
         """
         Adds random noise according to the error rate to the z component of a vector
 
         Args:
             error_rate: the error range to apply. Must be between 0 and 1.
         """
+        super(Noise).__init__(*args, **kwargs)
+
         if error_rate > 1 or error_rate < 0:
             raise ValueError("Noise error rate must be between 0 and 1")
         self.err_rate = error_rate
@@ -49,6 +55,74 @@ class Noise(ErrorType):
 
     def __repr__(self):
         return f"noise({self.err_rate:.2f})"
+
+
+class FalseBottom(ErrorType):
+    def __init__(self, debris_size=10, seed=None, *args, **kwargs):
+        """
+        Will generate a rectangular debris object of a given size in square meters at a random location
+        Args:
+            debris_size: The size of the debris object in
+            seed: A random seed for testing
+        """
+        super(FalseBottom).__init__(*args, **kwargs)
+
+        self.seed = seed
+        random.seed(self.seed)
+
+        self.length = random.random() * (debris_size-1)
+        self.width = debris_size / self.length
+
+        self.p1 = None
+        self.p2 = None
+        self.p3 = None
+        self.p4 = None
+        self.depth = 0
+
+    def _init_debris_(self, min_x: float, min_y: float, max_x: float, max_y: float) -> None:
+        """
+        Initializes the debris
+        Args:
+            min_x: The min horizontal value of the mesh
+            min_y: The min vertical value of the mesh
+            max_x: The max horizontal value of the mesh
+            max_y:  The max vertical value of the mesh
+
+        Returns:
+            None
+        """
+        random.seed(self.seed)
+
+        self.p1 = np.asarray([random.random() * (max_x - min_x) + min_x, random.random() * (max_y - min_y) + min_y])
+
+        # Random rotation around p1
+        p2_theta = random.random() * 2 * np.pi
+        p2_translation = get_rotated_vector(np.asarray([0, self.length]), p2_theta)
+        self.p2 = self.p1 + p2_translation
+
+        # 90-degree corner for the P2-P1-P3 angle
+        p3_theta = p2_theta - np.pi / 2
+        p3_translation = get_rotated_vector(np.asarray([0, self.width]), p3_theta)
+        self.p3 = self.p1 + p3_translation
+
+        # 45-degree corner for the P2-P1-P4 angle with the P1-P4 line being the center
+        p3_theta = p2_theta - np.pi / 4
+        p3_translation = get_rotated_vector(np.asarray([0, np.linalg.norm([self.width, self.length])]), p3_theta)
+        self.p3 = self.p1 + p3_translation
+
+    def eval(self, vector, *args, **kwargs):
+        """
+        Applies random vertical (z) noise error processing to an [x y z] vectorgit l
+        Args:
+            vector: [x y z] vector of a depth reading
+            seed: [Optional] a seed to give to the random number generator
+
+        Returns:
+            new_vector: an [x y z] vector with some error applied to it.
+        """
+        random.seed(seed)
+        new_vector = (vector[0], vector[1], vector[2] + random.uniform(-self.err_rate, self.err_rate) * vector[2])
+        return new_vector
 
 
 def run_pipeline(errs: list[ErrorType], vector: tuple[float, float, float], *args, **kwargs) \
