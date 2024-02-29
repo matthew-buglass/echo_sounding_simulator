@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from utils.geometry import get_rotated_vector
+from utils.geometry import get_rotated_vector, point_in_tri
 
 
 class ErrorType(ABC):
@@ -73,10 +73,7 @@ class FalseBottom(ErrorType):
         self.length = random.random() * (debris_size-1)
         self.width = debris_size / self.length
 
-        self.p1 = None
-        self.p2 = None
-        self.p3 = None
-        self.p4 = None
+        self.debris_tris = []
         self.depth = 0
 
     def _init_debris_(self, min_x: float, min_y: float, max_x: float, max_y: float) -> None:
@@ -93,36 +90,44 @@ class FalseBottom(ErrorType):
         """
         random.seed(self.seed)
 
-        self.p1 = np.asarray([random.random() * (max_x - min_x) + min_x, random.random() * (max_y - min_y) + min_y])
+        p1 = np.asarray([random.random() * (max_x - min_x) + min_x, random.random() * (max_y - min_y) + min_y])
 
         # Random rotation around p1
         p2_theta = random.random() * 2 * np.pi
         p2_translation = get_rotated_vector(np.asarray([0, self.length]), p2_theta)
-        self.p2 = self.p1 + p2_translation
+        p2 = p1 + p2_translation
 
         # 90-degree corner for the P2-P1-P3 angle
         p3_theta = p2_theta - np.pi / 2
         p3_translation = get_rotated_vector(np.asarray([0, self.width]), p3_theta)
-        self.p3 = self.p1 + p3_translation
+        p3 = p1 + p3_translation
 
         # 45-degree corner for the P2-P1-P4 angle with the P1-P4 line being the center
-        p3_theta = p2_theta - np.pi / 4
-        p3_translation = get_rotated_vector(np.asarray([0, np.linalg.norm([self.width, self.length])]), p3_theta)
-        self.p3 = self.p1 + p3_translation
+        p4_theta = p2_theta - np.pi / 4
+        p4_translation = get_rotated_vector(np.asarray([0, np.linalg.norm([self.width, self.length])]), p4_theta)
+        p4 = p1 + p4_translation
+
+        # Triangles that form the rectangle:
+        #  P2 --- P4
+        #  |      |
+        #  |      |
+        #  P1 --- P3
+        self.debris_tris = [(p1, p2, p4), (p1, p3, p4)]
 
     def eval(self, vector, *args, **kwargs):
         """
-        Applies random vertical (z) noise error processing to an [x y z] vectorgit l
+        Applies random vertical (z) noise error processing to an [x y z] vector
         Args:
             vector: [x y z] vector of a depth reading
-            seed: [Optional] a seed to give to the random number generator
 
         Returns:
             new_vector: an [x y z] vector with some error applied to it.
         """
-        random.seed(seed)
-        new_vector = (vector[0], vector[1], vector[2] + random.uniform(-self.err_rate, self.err_rate) * vector[2])
-        return new_vector
+        if any([point_in_tri((vector[0], vector[1]), p1, p2, p3) for p1, p2, p3 in self.debris_tris]):
+            new_vector = (vector[0], vector[1], vector[2] + random.uniform(-self.err_rate, self.err_rate) * vector[2])
+            return new_vector
+        else:
+            return vector
 
 
 def run_pipeline(errs: list[ErrorType], vector: tuple[float, float, float], *args, **kwargs) \
