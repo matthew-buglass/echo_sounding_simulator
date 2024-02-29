@@ -8,7 +8,7 @@ from utils.geometry import get_rotated_vector, point_in_tri
 
 class ErrorType(ABC):
     @abstractmethod
-    def eval(self, vector: tuple[float, float, float], *args, **kwargs):
+    def eval(self, vector: tuple[float, float, float], *args, **kwargs) -> tuple[float, float, float]:
         """
         Applies some error processing to an [x y z] vector
         Args:
@@ -124,8 +124,9 @@ class FalseBottom(ErrorType):
             new_vector: an [x y z] vector with some error applied to it.
         """
         if any([point_in_tri((vector[0], vector[1]), p1, p2, p3) for p1, p2, p3 in self.debris_tris]):
-            new_vector = (vector[0], vector[1], vector[2] + random.uniform(-self.err_rate, self.err_rate) * vector[2])
-            return new_vector
+            if self.depth == 0:
+                self.depth = vector[2] / 2
+            return vector[0], vector[1], self.depth
         else:
             return vector
 
