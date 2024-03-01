@@ -126,6 +126,33 @@ class TestVectorRotation(unittest.TestCase):
         self.assertAlmostEqual(actual_vector[1], expected_vector[1])
         self.assertAlmostEqual(actual_theta, abs(expected_theta))
 
+    def test_rotating_three_hundred_and_sixty_degrees(self):
+        expected_theta = 0
+        og_vector = (1, 0, 10)
+        expected_vector = og_vector
+
+        actual_vector = get_x_y_rotated_vector(np.asarray(og_vector[0:2]), np.pi * 2)
+        actual_vector = (float(actual_vector[0]), float(actual_vector[1]), 10)
+        actual_theta = find_x_y_theta(og_vector, (0, 0, 0), actual_vector)
+
+        self.assertAlmostEqual(actual_vector[0], expected_vector[0])
+        self.assertAlmostEqual(actual_vector[1], expected_vector[1])
+        self.assertAlmostEqual(actual_theta, abs(expected_theta))
+
+    def test_rotating_three_hundred_and_fifteen_degrees(self):
+        expected_theta = np.pi / 4
+        og_vector = (1, 0, 10)
+        expected_vector = ((2 ** 0.5) / 2, -(2 ** 0.5) / 2, 10)
+
+        actual_vector = get_x_y_rotated_vector(np.asarray(og_vector[0:2]), np.pi * 1.75)
+        actual_vector = (float(actual_vector[0]), float(actual_vector[1]), 10)
+        actual_theta = find_x_y_theta(og_vector, (0, 0, 0), actual_vector)
+
+        self.assertAlmostEqual(actual_vector[0], expected_vector[0])
+        self.assertAlmostEqual(actual_vector[1], expected_vector[1])
+        self.assertAlmostEqual(actual_theta, abs(expected_theta))
+
+
 
 if __name__ == '__main__':
     unittest.main()

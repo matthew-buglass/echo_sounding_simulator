@@ -1,3 +1,4 @@
+import math
 import random
 from abc import ABC, abstractmethod
 
@@ -93,20 +94,20 @@ class FalseBottom(ErrorType):
         # get a random point in the mesh
         p1 = np.asarray([random.random() * (max_x - min_x) + min_x, random.random() * (max_y - min_y) + min_y])
 
-        # Random rotation around p1
-        p2_theta = random.random() * 2 * np.pi
-        p2_translation = get_x_y_rotated_vector(np.asarray([0, self.length]), p2_theta)
-        p2 = p1 + p2_translation
+        #  P2 --- P4
+        #  |      |
+        #  |      |
+        #  P1 --- P3
+        # Get the point rotations about p1
+        theta = random.random() * 2 * np.pi
 
-        # 90-degree corner for the P2-P1-P3 angle
-        p3_theta = p2_theta - np.pi / 2
-        p3_translation = get_x_y_rotated_vector(np.asarray([0, self.width]), p3_theta)
-        p3 = p1 + p3_translation
+        p2_pre = np.asarray([self.length, 0])
+        p3_pre = np.asarray([0, self.width])
+        p4_pre = np.asarray([self.length, self.width])
 
-        # 45-degree corner for the P2-P1-P4 angle with the P1-P4 line being the center
-        p4_theta = p2_theta - np.pi / 4
-        p4_translation = get_x_y_rotated_vector(np.asarray([0, np.linalg.norm([self.width, self.length])]), p4_theta)
-        p4 = p1 + p4_translation
+        p2 = p1 + get_x_y_rotated_vector(p2_pre, theta)
+        p3 = p1 + get_x_y_rotated_vector(p3_pre, theta)
+        p4 = p1 + get_x_y_rotated_vector(p4_pre, theta)
 
         # Triangles that form the rectangle:
         #  P2 --- P4
