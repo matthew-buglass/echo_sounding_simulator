@@ -110,8 +110,8 @@ def find_x_y_theta(
     Returns:
         The radians angle, theta, between p1-p2-p3
     """
-    v1 = np.asarray(p1) - np.asarray(p2)
-    v2 = np.asarray(p3) - np.asarray(p2)
+    v1 = np.asarray(p1[0:2]) - np.asarray(p2[0:2])
+    v2 = np.asarray(p3[0:2]) - np.asarray(p2[0:2])
 
     abs_v1 = np.linalg.norm(v1, 2)
     abs_v2 = np.linalg.norm(v2, 2)

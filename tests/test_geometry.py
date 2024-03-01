@@ -68,7 +68,7 @@ class TestFindTheta(unittest.TestCase):
     def test_ninety_degree_works(self):
         expected_theta = np.pi / 2
         p1 = (0, 1, 10)
-        p2 = (0, 0, 10)
+        p2 = (0, 0, -10)
         p3 = (1, 0, 10)
 
         actual_theta = find_x_y_theta(p1, p2, p3)
@@ -78,7 +78,7 @@ class TestFindTheta(unittest.TestCase):
     def test_one_hundred_and_eighty_degree_works(self):
         expected_theta = np.pi
         p1 = (0, 1, 10)
-        p2 = (0, 0, 10)
+        p2 = (0, 0, -10)
         p3 = (0, -1, 10)
 
         actual_theta = find_x_y_theta(p1, p2, p3)
@@ -91,16 +91,40 @@ class TestVectorRotation(unittest.TestCase):
         expected_theta = np.pi / 2
         og_vector = (1, 0, 10)
         expected_vector = (0, 1, 10)
-        err_range = 1e-100000
 
         actual_vector = get_x_y_rotated_vector(np.asarray(og_vector[0:2]), expected_theta)
         actual_vector = (float(actual_vector[0]), float(actual_vector[1]), 10)
         actual_theta = find_x_y_theta(og_vector, (0, 0, 0), actual_vector)
 
+        self.assertAlmostEqual(actual_vector[0], expected_vector[0])
+        self.assertAlmostEqual(actual_vector[1], expected_vector[1])
         self.assertAlmostEqual(actual_theta, expected_theta)
-        self.assertTrue(
-            all([expected_vector[i] - err_range <= c <= expected_vector[i] + err_range
-                 for i, c in enumerate(actual_vector)]))
+
+    def test_rotating_negative_ninety_degrees(self):
+        expected_theta = - np.pi / 2
+        og_vector = (1, 0, 10)
+        expected_vector = (0, -1, 10)
+
+        actual_vector = get_x_y_rotated_vector(np.asarray(og_vector[0:2]), expected_theta)
+        actual_vector = (float(actual_vector[0]), float(actual_vector[1]), 10)
+        actual_theta = find_x_y_theta(og_vector, (0, 0, 0), actual_vector)
+
+        self.assertAlmostEqual(actual_vector[0], expected_vector[0])
+        self.assertAlmostEqual(actual_vector[1], expected_vector[1])
+        self.assertAlmostEqual(actual_theta, abs(expected_theta))
+
+    def test_rotating_forty_five_degrees(self):
+        expected_theta = np.pi / 4
+        og_vector = (1, 0, 10)
+        expected_vector = ((2 ** 0.5) / 2, (2 ** 0.5) / 2, 10)
+
+        actual_vector = get_x_y_rotated_vector(np.asarray(og_vector[0:2]), expected_theta)
+        actual_vector = (float(actual_vector[0]), float(actual_vector[1]), 10)
+        actual_theta = find_x_y_theta(og_vector, (0, 0, 0), actual_vector)
+
+        self.assertAlmostEqual(actual_vector[0], expected_vector[0])
+        self.assertAlmostEqual(actual_vector[1], expected_vector[1])
+        self.assertAlmostEqual(actual_theta, abs(expected_theta))
 
 
 if __name__ == '__main__':
