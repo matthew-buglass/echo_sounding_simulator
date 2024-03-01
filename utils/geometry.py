@@ -49,8 +49,13 @@ def point_in_tri(point: tuple[float, float], v1: tuple[float, float, float],
         return not (has_pos and has_neg)
 
 
-def triangular_plane_intercept(x: float, y: float, v1: tuple[float, float, float],
-                               v2: tuple[float, float, float], v3: tuple[float, float, float]) -> float:
+def triangular_plane_intercept(
+        x: float,
+        y: float,
+        v1: tuple[float, float, float],
+        v2: tuple[float, float, float],
+        v3: tuple[float, float, float]
+) -> float:
     """
     Calculates the z value of a point with coordinates [x y] on the plane defined by v1, v2, and v3.
 
