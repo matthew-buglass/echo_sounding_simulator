@@ -104,7 +104,7 @@ class TestFalseBottomErrorType(unittest.TestCase):
 
     def test_calling_eval_in_triangle_raises_incorrect_depth(self):
         expected_depth = 10
-        points = [(14, 84, expected_depth*2), (21, 84.8, 30), (18, 84.4, 10)]
+        points = [(14, 84, expected_depth * 2), (21, 84.8, 30), (18, 84.4, 10)]
         err = FalseBottom(seed=1)
         err.init_debris(0, 0, 100, 100)
 

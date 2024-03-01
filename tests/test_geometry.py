@@ -153,6 +153,5 @@ class TestVectorRotation(unittest.TestCase):
         self.assertAlmostEqual(actual_theta, abs(expected_theta))
 
 
-
 if __name__ == '__main__':
     unittest.main()

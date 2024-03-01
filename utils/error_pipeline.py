@@ -1,4 +1,3 @@
-import math
 import random
 from abc import ABC, abstractmethod
 
@@ -71,7 +70,7 @@ class FalseBottom(ErrorType):
         self.seed = seed
         random.seed(self.seed)
 
-        self.length = random.random() * (debris_size-1)
+        self.length = random.random() * (debris_size - 1)
         self.width = debris_size / self.length
 
         self.debris_tris = []
