@@ -116,7 +116,7 @@ class CustomTriMesh:
         # while cartesian normal origin is bottom left
         return (((self.img_height - y_idx) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
 
-    @timed
+    # @timed
     def _build_image_representation(self) -> None:
         """
         Builds a top-down image representation of the mesh with a given height and width
@@ -135,7 +135,7 @@ class CustomTriMesh:
                 self.image[i][j] = self.get_shallowest_depth(rotated_vector[0], rotated_vector[1]) or self.min_z
 
         # Scale the image
-        self.original_image = (self.image - self.image.min()) * (1 / (self.image.max() - self.image.min()) * 255).astype('uint8')
+        self.original_image = ((self.image - self.image.min()) * (1 / (self.image.max() - self.image.min()) * 255)).astype('uint8')
 
     def _show_image_(self) -> None:
         """
