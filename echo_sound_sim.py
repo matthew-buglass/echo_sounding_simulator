@@ -4,6 +4,7 @@ import time
 import trimesh
 
 from utils.cli_parsing import parse_args
+from utils.error_pipeline import FalseBottom
 from utils.mesh import CustomTriMesh
 from utils.sampling_procedures import parallel_track_sampling_generator, process_position, \
     drawn_path_sampling_generator
@@ -29,6 +30,12 @@ if __name__ == '__main__':
         "max_y": max_y,
     }
 
+    # Perform any additional setup for the error pipeline
+    for err in args.errors:
+        if isinstance(err, FalseBottom):
+            err.init_debris(min_x, min_y, max_x, max_y)
+
+    # Get the Sampling Path Type
     if args.path_type == "drawn":
         path_points = mesh.get_path_over_mesh()
         path_generator = drawn_path_sampling_generator(
