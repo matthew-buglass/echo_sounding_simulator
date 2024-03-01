@@ -1,7 +1,7 @@
 import argparse
 
 from utils.emitters import StdOutVectorEmitter, CsvVectorEmitter, TsvVectorEmitter, EndpointVectorEmitter
-from utils.error_pipeline import Noise
+from utils.error_pipeline import Noise, FalseBottom
 from utils.sampling_procedures import PATH_GENERATORS
 
 
@@ -13,6 +13,8 @@ class ParseErrorPipeline(argparse.Action):
             match err_type:
                 case "noise":
                     items.append(Noise(float(err_val)))
+                case "fb":
+                    items.append(FalseBottom(float(err_val)))
                 case _:
                     pass
 
@@ -60,7 +62,9 @@ def parse_args(args):
                         action=ParseErrorPipeline,
                         nargs="+",
                         help="A list describing the error introduction pipeline. Current formats:\n"
-                             "\tnoise@0.05 - A random percent of noise present in a sensor. Plus or minus the value.",
+                             "\tnoise@0.05 - A random percent of noise present in a sensor. Plus or minus the value.\n"
+                             "\tfb@10 - A random rectangle representing a debris field with a specified square area "
+                             "that causes a false bottom reading",
                         default=[])
     parser.add_argument("-vel",
                         "--velocity",
