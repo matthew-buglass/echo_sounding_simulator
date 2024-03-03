@@ -49,8 +49,13 @@ def point_in_tri(point: tuple[float, float], v1: tuple[float, float, float],
         return not (has_pos and has_neg)
 
 
-def triangular_plane_intercept(x: float, y: float, v1: tuple[float, float, float],
-                               v2: tuple[float, float, float], v3: tuple[float, float, float]) -> float:
+def triangular_plane_intercept(
+        x: float,
+        y: float,
+        v1: tuple[float, float, float],
+        v2: tuple[float, float, float],
+        v3: tuple[float, float, float]
+) -> float:
     """
     Calculates the z value of a point with coordinates [x y] on the plane defined by v1, v2, and v3.
 
@@ -76,10 +81,45 @@ def triangular_plane_intercept(x: float, y: float, v1: tuple[float, float, float
     return z
 
 
-def get_rotated_vector(vector, theta):
+def get_x_y_rotated_vector(vector: np.ndarray, theta: float) -> np.ndarray:
+    """
+    Rotates a vector by theta about the origin
+    Args:
+        vector: a numpy array representation of a vector [x y]
+        theta: the angle, in radians to rotate by
+
+    Returns:
+        rotated_vector: the vector rotated about the [x y] origin
+    """
     R = np.asarray([
         [np.cos(theta), -np.sin(theta)],
         [np.sin(theta), np.cos(theta)]
     ])
     rotated_vector = np.dot(R, np.atleast_2d(vector).T)
     return np.atleast_1d(rotated_vector).T[0]
+
+
+def find_x_y_theta(
+        p1: tuple[float, float, float],
+        p2: tuple[float, float, float],
+        p3: tuple[float, float, float]
+) -> float:
+    """
+    Finds the absolute angle (in radians) of intercept of the lines that pass through p1-p2 and p2-p3, intercepting at
+    v2.
+    Args:
+        p1: an endpoint in the angle
+        p2: The intercept point
+        p3: an endpoint in the angle
+
+    Returns:
+        The radians angle, theta, between p1-p2-p3
+    """
+    v1 = np.asarray(p1[0:2]) - np.asarray(p2[0:2])
+    v2 = np.asarray(p3[0:2]) - np.asarray(p2[0:2])
+
+    abs_v1 = np.linalg.norm(v1, 2)
+    abs_v2 = np.linalg.norm(v2, 2)
+
+    theta = np.arccos(np.dot(v1, v2) / (abs_v1 * abs_v2))
+    return theta

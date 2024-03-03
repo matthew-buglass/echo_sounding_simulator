@@ -1,6 +1,10 @@
+import math
 import unittest
 
-from utils.error_pipeline import ErrorType, Noise, run_pipeline
+import numpy as np
+
+from utils.error_pipeline import ErrorType, Noise, run_pipeline, FalseBottom
+from utils.geometry import find_x_y_theta
 
 
 class TestErrorType(unittest.TestCase):
@@ -28,6 +32,94 @@ class TestNoiseErrorType(unittest.TestCase):
             # vector is correct and error is within 5%
             self.assertTrue(abs(vector[2] - new_vector[2]) / vector[2] <= 0.05, msg="Error not within 5%")
             self.assertTupleEqual(new_vector, expected_vectors[i], msg="Vectors not equal")
+
+
+class TestFalseBottomErrorType(unittest.TestCase):
+    def test_default_debris_surface_area_is_10(self):
+        expected_area = 10
+        err = FalseBottom()
+        err.init_debris(0, 0, 100, 100)
+
+        (p1, p2, _), (_, p3, _) = err.debris_tris
+
+        length = ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
+        width = ((p1[0] - p3[0]) ** 2 + (p1[1] - p3[1]) ** 2) ** 0.5
+        actual_area = length * width
+
+        self.assertAlmostEqual(actual_area, expected_area)
+
+    def test_custom_debris_surface_area_is_correct(self):
+        expected_area = 20
+        err = FalseBottom(debris_size=expected_area)
+        err.init_debris(0, 0, 100, 100)
+
+        (p1, p2, _), (_, p3, _) = err.debris_tris
+
+        length = ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
+        width = ((p1[0] - p3[0]) ** 2 + (p1[1] - p3[1]) ** 2) ** 0.5
+        actual_area = length * width
+
+        self.assertAlmostEqual(actual_area, expected_area)
+
+    def test_debris_field_is_square(self):
+        err = FalseBottom(seed=1)
+        err.init_debris(0, 0, 100, 100)
+        ninety_degrees = np.pi / 2
+        length = err.length
+        width = err.width
+        hypotenuse = np.linalg.norm([err.width, err.length], 2)
+
+        # Triangles that form the rectangle:
+        #  P2 --- P4
+        #  |      |
+        #  |      |
+        #  P1 --- P3
+        (p1, p2, p4), (_, p3, _) = err.debris_tris
+
+        # Distances
+        p1_p2_dist = math.dist(p1, p2)
+        p3_p4_dist = math.dist(p3, p4)
+        p1_p3_dist = math.dist(p1, p3)
+        p4_p2_dist = math.dist(p4, p2)
+        p1_p4_dist = math.dist(p1, p4)
+        p3_p2_dist = math.dist(p3, p2)
+
+        self.assertAlmostEqual(length, p1_p2_dist)
+        self.assertAlmostEqual(length, p3_p4_dist)
+        self.assertAlmostEqual(width, p1_p3_dist)
+        self.assertAlmostEqual(width, p4_p2_dist)
+        self.assertAlmostEqual(hypotenuse, p1_p4_dist)
+        self.assertAlmostEqual(hypotenuse, p3_p2_dist)
+
+        # Angles
+        p2_p1_p3_theta = find_x_y_theta(p2, p1, p3)
+        p1_p3_p4_theta = find_x_y_theta(p1, p3, p4)
+        p3_p4_p2_theta = find_x_y_theta(p3, p4, p2)
+        p4_p2_p1_theta = find_x_y_theta(p4, p2, p1)
+
+        self.assertAlmostEqual(p2_p1_p3_theta, ninety_degrees)
+        self.assertAlmostEqual(p1_p3_p4_theta, ninety_degrees)
+        self.assertAlmostEqual(p3_p4_p2_theta, ninety_degrees)
+        self.assertAlmostEqual(p4_p2_p1_theta, ninety_degrees)
+
+    def test_calling_eval_in_triangle_raises_incorrect_depth(self):
+        expected_depth = 10
+        points = [(14, 84, expected_depth * 2), (21, 84.8, 30), (18, 84.4, 10)]
+        err = FalseBottom(seed=1)
+        err.init_debris(0, 0, 100, 100)
+
+        for p in points:
+            new_p = err.eval(p)
+            self.assertEqual(new_p[2], expected_depth)
+
+    def test_calling_eval_outside_of_triangle_raises_correct_depth(self):
+        points = [(12, 80, 15), (30, 75, 30), (20, 80, 10)]
+        err = FalseBottom(seed=1)
+        err.init_debris(0, 0, 100, 100)
+
+        for p in points:
+            new_p = err.eval(p)
+            self.assertEqual(new_p[2], p[2])
 
 
 class TestRunPipeline(unittest.TestCase):

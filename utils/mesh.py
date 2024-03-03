@@ -3,7 +3,7 @@ from trimesh import Trimesh
 import cv2
 import numpy as np
 
-from utils.geometry import point_in_tri, triangular_plane_intercept, get_rotated_vector
+from utils.geometry import point_in_tri, triangular_plane_intercept, get_x_y_rotated_vector
 from utils.timing import timed
 
 
@@ -116,7 +116,7 @@ class CustomTriMesh:
         # while cartesian normal origin is bottom left
         return (((self.img_height - y_idx) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
 
-    @timed
+    # @timed
     def _build_image_representation(self) -> None:
         """
         Builds a top-down image representation of the mesh with a given height and width
@@ -131,11 +131,11 @@ class CustomTriMesh:
         y_coords = self._y_image_index_to_coordinate_build(np.asarray(range(self.img_width)))
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
-                rotated_vector = get_rotated_vector(np.asarray([x, y]), -(np.pi / 2))
+                rotated_vector = get_x_y_rotated_vector(np.asarray([x, y]), -(np.pi / 2))
                 self.image[i][j] = self.get_shallowest_depth(rotated_vector[0], rotated_vector[1]) or self.min_z
 
         # Scale the image
-        self.original_image = (self.image - self.image.min()) * (1 / (self.image.max() - self.image.min()) * 255).astype('uint8')
+        self.original_image = ((self.image - self.image.min()) * (1 / (self.image.max() - self.image.min()) * 255)).astype('uint8')
 
     def _show_image_(self) -> None:
         """
