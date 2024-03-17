@@ -209,9 +209,10 @@ class CustomTriMesh:
         Returns:
             A list of start and end points of a path that the ship will take
         """
+        # we have to do a transform here because of the differences in image and array indexing
         return [
             (self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y))
-            for x, y in self.image_coords
+            for y, x in self.image_coords
         ]
 
     def get_path_over_mesh(self) -> list[tuple[float, float]]:
@@ -246,8 +247,8 @@ class CustomTriMesh:
         Reads mouse inputs on the mesh image being displayed
         Args:
             event: The event thrown by cv2
-            x: the x position of the mouse
-            y: the y position of the mouse
+            x: the x horizontal of the mouse
+            y: the y vertical of the mouse
             flags:
             parameters:
 
@@ -261,7 +262,7 @@ class CustomTriMesh:
             self.image_coords = []
             self.current_image = self.original_image.copy()
             self.image_coords.append((x, y))
-            print(f"started drawing at {(x, y)}")
+            print(f"started drawing at {(y, x)}")
 
         # Draw as the mouse is moved
         elif event == cv2.EVENT_MOUSEMOVE:
@@ -270,14 +271,14 @@ class CustomTriMesh:
                 if self.drawing:
                     if self.image_coords[-1] != (x, y):
                         self.image_coords.append((x, y))
-                        print(f"drawn to {(x, y)}")
+                        print(f"drawn to {(y, x)}")
                         cv2.line(self.current_image, self.image_coords[-2], self.image_coords[-1], (0, 0, 0), 2)
                         self._show_image_()
         # Stop drawing when the mouse lifts
         elif event == cv2.EVENT_LBUTTONUP:
             self.drawing = False
             self.image_coords.append((x, y))
-            print(f"stopped drawing at {(x, y)}")
+            print(f"stopped drawing at {(y, x)}")
 
             # Draw line
             cv2.line(self.current_image, self.image_coords[-2], self.image_coords[-1], (0, 0, 0), 2)
