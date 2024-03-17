@@ -147,6 +147,8 @@ class TestSensorDropout(unittest.TestCase):
 
         self.assertTupleEqual(err.eval(point, seed=10), expected_point)
         self.assertAlmostEqual(err._dropout_chance_(), 0.71)
+        self.assertTupleEqual(err.eval(point, seed=10), expected_point)
+        self.assertAlmostEqual(err._dropout_chance_(), 0.705)
 
     def test_dropout_causes_dropout_count_to_increment(self):
         point = (12, 80, 15)
