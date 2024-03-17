@@ -116,6 +116,17 @@ class CustomTriMesh:
         # while cartesian normal origin is bottom left
         return (((self.img_height - y_idx) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
 
+    def _scale_z_depth_to_colour(self, z_depth):
+        """
+        Returns a 3 element integer array to represent an RGB colour
+        Args:
+            z_depth: a depth reading
+
+        Returns:
+            colour: a 3 element integer array to represent an RGB colour
+        """
+        return np.asarray([255]*3)
+
     # @timed
     def _build_image_representation(self) -> None:
         """
