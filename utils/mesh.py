@@ -188,13 +188,11 @@ class CustomTriMesh:
         Returns:
             None
         """
-        x_pix, y_pix, _ = self.current_image.shape
-
-        i = int(((depth_vector[0] - self.min_x) / self.max_x) * x_pix)
-        j = int(((depth_vector[1] - self.min_y) / self.max_y) * y_pix)
+        i = self._x_coordinate_display_to_image_index(depth_vector[0])
+        j = self._y_coordinate_display_to_image_index(depth_vector[1])
         colour = self._scale_z_depth_to_colour(depth_vector[2])
 
-        self.current_image[i][j] = colour
+        self.original_image[i][j] = colour
 
     def _show_image_(self) -> None:
         """
@@ -226,7 +224,8 @@ class CustomTriMesh:
         """
         if self.original_image is None:
             self._build_image_representation()
-            self.current_image = self.original_image.copy()
+
+        self.current_image = self.original_image.copy()
 
         cv2.namedWindow(self.image_window_name)
         cv2.setMouseCallback(self.image_window_name, self._read_mouse_inputs_)
