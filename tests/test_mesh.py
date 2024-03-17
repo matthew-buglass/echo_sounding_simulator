@@ -55,6 +55,30 @@ class TestMesh(unittest.TestCase):
         self.assertTupleEqual(expected_coords.shape, actual_coords.shape)
         self.assertTrue(np.equal(expected_coords, actual_coords).all())
 
+    def test_x_coordinate_conversion_is_correct(self):
+        expected_coords = [13.4375, -10.0, 65.15625, 38.671875, 32.890625]
+        expected_image_idxs = [300, 0, 962, 623, 549]
+
+        for i, expected_coord in enumerate(expected_coords):
+            expected_image_idx = expected_image_idxs[i]
+            actual_coord = self.mesh._x_image_index_to_coordinate_display(expected_image_idx)
+            actual_image_idx = self.mesh._x_coordinate_display_to_image_index(expected_coord)
+
+            self.assertAlmostEqual(actual_coord, expected_coord)
+            self.assertEqual(actual_image_idx, expected_image_idx)
+
+    def test_y_coordinate_conversion_is_correct(self):
+        expected_coords = [7.734375, -17.03125, -47.65625, 10.0, -66.5625]
+        expected_image_idxs = [29, 346, 738, 0, 980]
+
+        for i, expected_coord in enumerate(expected_coords):
+            expected_image_idx = expected_image_idxs[i]
+            actual_coord = self.mesh._y_image_index_to_coordinate_display(expected_image_idx)
+            actual_image_idx = self.mesh._y_coordinate_display_to_image_index(expected_coord)
+
+            self.assertAlmostEqual(actual_coord, expected_coord)
+            self.assertEqual(actual_image_idx, expected_image_idx)
+
 
 if __name__ == '__main__':
     unittest.main()

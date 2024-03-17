@@ -120,6 +120,30 @@ class CustomTriMesh:
         # while cartesian normal origin is bottom left
         return (((self.img_height - y_idx) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
 
+    def _x_coordinate_display_to_image_index(self, x_cord: float) -> int:
+        """
+        Converts a real x-coordinate into a pixel index
+        Args:
+            x_cord: The real x position value
+
+        Returns:
+            The width index of an image
+        """
+        return int(((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width)
+
+    def _y_coordinate_display_to_image_index(self, y_cord: float) -> int:
+        """
+        Converts a real y-coordinate into a pixel index
+        Args:
+            y_cord: The real y position value
+
+        Returns:
+            The height index of an image
+        """
+        # We have to flip the y position, as images index (0,0) in top left,
+        # while cartesian normal origin is bottom left
+        return int(self.img_height - ((y_cord - self.min_y) / (self.max_y - self.min_y) * self.img_height))
+
     def _scale_z_depth_to_colour(self, z_depth):
         """
         Returns a 3 element integer array to represent an RGB colour. Scales according to the Viridis colour map,
@@ -153,8 +177,24 @@ class CustomTriMesh:
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
                 rotated_vector = get_x_y_rotated_vector(np.asarray([x, y]), -(np.pi / 2))
-                depth = self.get_shallowest_depth(rotated_vector[0], rotated_vector[1])
                 self.original_image[i][j] = white if self.point_in_mesh(rotated_vector[0], rotated_vector[1]) else black
+
+    def add_depth_reading(self, depth_vector) -> None:
+        """
+        Marks on the image representation a depth reading
+        Args:
+            depth_vector: a vector of [x y z] coordinates
+
+        Returns:
+            None
+        """
+        x_pix, y_pix, _ = self.current_image.shape
+
+        i = int(((depth_vector[0] - self.min_x) / self.max_x) * x_pix)
+        j = int(((depth_vector[1] - self.min_y) / self.max_y) * y_pix)
+        colour = self._scale_z_depth_to_colour(depth_vector[2])
+
+        self.current_image[i][j] = colour
 
     def _show_image_(self) -> None:
         """
@@ -178,10 +218,11 @@ class CustomTriMesh:
 
     def get_path_over_mesh(self) -> list[tuple[float, float]]:
         """
-        Shows a top-down image representation of an image
+        Shows a top-down image representation of an image and takes user input to draw a path
 
         Returns:
-            A list of start and end points of a path that the ship will take
+            A list of start and end points of a path that the ship will take, if a path was given, and empty list
+            otherwise
         """
         if self.original_image is None:
             self._build_image_representation()
@@ -197,6 +238,7 @@ class CustomTriMesh:
             # Close program with keyboard 'q'
             if key == ord('q'):
                 cv2.destroyAllWindows()
+                return []
 
         return self._process_out_coordinates_()
 
