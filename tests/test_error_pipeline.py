@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from utils.error_pipeline import ErrorType, Noise, run_pipeline, FalseBottom
+from utils.error_pipeline import ErrorType, Noise, run_pipeline, FalseBottom, Dropout
 from utils.geometry import find_x_y_theta
 
 
@@ -120,6 +120,53 @@ class TestFalseBottomErrorType(unittest.TestCase):
         for p in points:
             new_p = err.eval(p)
             self.assertEqual(new_p[2], p[2])
+
+
+class TestSensorDropout(unittest.TestCase):
+    def test_no_dropout_causes_vector_to_remain_the_same(self):
+        points = [(12, 80, 15), (30, 75, 30), (20, 80, 10)]
+        err = Dropout(error_rate=0.1)
+
+        for p in points:
+            new_p = err.eval(p, seed=1)
+            self.assertTupleEqual(new_p, p, msg="Vectors not equal")
+
+    def test_dropout_causes_vector_z_to_be_zero(self):
+        points = [(12, 80, 15), (30, 75, 30), (20, 80, 10)]
+        expected_points = [(12, 80, 0), (30, 75, 0), (20, 80, 0)]
+        err = Dropout(error_rate=0.9)
+
+        for i, p in enumerate(points):
+            new_p = err.eval(p, seed=10)
+            self.assertTupleEqual(new_p, expected_points[i], msg="Vectors not equal")
+
+    def test_dropout_increases_dropout_chance(self):
+        point = (12, 80, 15)
+        expected_point = (12, 80, 0)
+        err = Dropout(error_rate=0.7, drop_off_rate=0.01)
+
+        self.assertTupleEqual(err.eval(point, seed=10), expected_point)
+        self.assertAlmostEqual(err._dropout_chance_(), 0.71)
+
+    def test_dropout_causes_dropout_count_to_increment(self):
+        point = (12, 80, 15)
+        expected_point = (12, 80, 0)
+        err = Dropout(error_rate=0.7, drop_off_rate=0.01)
+        new_point = err.eval(point, seed=10)
+
+        self.assertTupleEqual(new_point, expected_point)
+        self.assertAlmostEqual(err.drops_in_a_row, 1)
+
+    def test_no_dropout_resets_the_dropout_chance(self):
+        point = (12, 80, 15)
+        expected_point = (12, 80, 15)
+        err = Dropout(error_rate=0.01, drop_off_rate=0.01)
+        err.drops_in_a_row = 5
+
+        self.assertEqual(err.drops_in_a_row, 5)
+        new_point = err.eval(point, seed=10)
+        self.assertTupleEqual(new_point, expected_point)
+        self.assertAlmostEqual(err.drops_in_a_row, 0)
 
 
 class TestRunPipeline(unittest.TestCase):

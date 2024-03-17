@@ -28,7 +28,7 @@ class Noise(ErrorType):
         Args:
             error_rate: the error range to apply. Must be between 0 and 1.
         """
-        super(Noise).__init__(*args, **kwargs)
+        super(Noise, self).__init__(*args, **kwargs)
 
         if error_rate > 1 or error_rate < 0:
             raise ValueError("Noise error rate must be between 0 and 1")
@@ -65,7 +65,7 @@ class FalseBottom(ErrorType):
             debris_size: The size of the debris object in
             seed: A random seed for testing
         """
-        super(FalseBottom).__init__(*args, **kwargs)
+        super(FalseBottom, self).__init__(*args, **kwargs)
 
         self.seed = seed
         random.seed(self.seed)
@@ -130,6 +130,57 @@ class FalseBottom(ErrorType):
             return vector[0], vector[1], self.depth
         else:
             return vector
+
+
+class Dropout(ErrorType):
+    def __init__(self, error_rate, drop_off_rate=0.02, *args, **kwargs):
+        """
+        Adds a random chance of a sensor failing, with a stochastic falloff
+
+        Args:
+            error_rate: the error rate to apply. Must be between 0 and 1.
+        """
+        super(Dropout, self).__init__(*args, **kwargs)
+
+        if error_rate > 1 or error_rate < 0:
+            raise ValueError("Noise error rate must be between 0 and 1")
+        self.err_rate = error_rate
+
+        # Stochastic falloff hyperparameters
+        self.drops_in_a_row = 0
+        self.drop_off = drop_off_rate
+
+    def _dropout_chance_(self) -> float:
+        """
+        Calculates the change of hte sensor dropping out
+        Returns:
+            drop_chance: A percent change that the sensor will drop out
+        """
+        stochastic_modification = self.drop_off / self.drops_in_a_row if self.drops_in_a_row > 0 else 0
+        drop_off_chance = self.err_rate + stochastic_modification
+
+        return drop_off_chance
+
+    def eval(self, vector, seed=None, *args, **kwargs):
+        """
+        Randomly, according to its error rate instantiation, causes a sensor dropout
+        Args:
+            vector: [x y z] vector of a depth reading
+            seed: [Optional] a seed to give to the random number generator
+
+        Returns:
+            new_vector: an [x y z] vector with some error applied to it.
+        """
+        random.seed(seed)
+        dropped_now = random.random() < self._dropout_chance_()
+
+        if dropped_now:
+            self.drops_in_a_row += 1
+        else:
+            self.drops_in_a_row = 0
+
+        new_vector = (vector[0], vector[1], 0 if dropped_now else vector[2])
+        return new_vector
 
 
 def run_pipeline(errs: list[ErrorType], vector: tuple[float, float, float], *args, **kwargs) \
