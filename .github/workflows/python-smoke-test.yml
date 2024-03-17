@@ -44,4 +44,4 @@ jobs:
 
     - name: "Run tox for ${{ matrix.python-version }}"
       run: |
-        python echo_sound_sim.py tests/test_data/test_mesh.stl -sr=1 -vel=50 --no-wait
+        python echo_sound_sim.py tests/test_data/test_mesh.stl -sr=1 -vel=50 -e noise@0.1 fb@20 fb@5 fb@30 drop@0.1 --no-wait
