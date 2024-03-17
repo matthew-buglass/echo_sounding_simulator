@@ -119,12 +119,14 @@ class CustomTriMesh:
     # @timed
     def _build_image_representation(self) -> None:
         """
-        Builds a top-down image representation of the mesh with a given height and width
+        Builds an initial top-down image representation of the mesh with a given height and width
 
         Returns:
             None
         """
-        self.image = np.zeros((self.img_height, self.img_width))
+        self.original_image = np.zeros((self.img_height, self.img_width, 3))
+        white = np.asarray([255]*3)
+        black = np.asarray([0]*3)
 
         # get actual x and y coordinates
         x_coords = self._x_image_index_to_coordinate_build(np.asarray(range(self.img_height)))
@@ -132,10 +134,7 @@ class CustomTriMesh:
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
                 rotated_vector = get_x_y_rotated_vector(np.asarray([x, y]), -(np.pi / 2))
-                self.image[i][j] = self.get_shallowest_depth(rotated_vector[0], rotated_vector[1]) or self.min_z
-
-        # Scale the image
-        self.original_image = ((self.image - self.image.min()) * (1 / (self.image.max() - self.image.min()) * 255)).astype('uint8')
+                self.original_image[i][j] = white if self.point_in_mesh(rotated_vector[0], rotated_vector[1]) else black
 
     def _show_image_(self) -> None:
         """
@@ -228,6 +227,18 @@ class CustomTriMesh:
             self.image_coords = []
             self.current_image = self.original_image.copy()
             self._show_image_()
+
+    def point_in_mesh(self, x, y) -> bool:
+        """
+        Returns whether a point is within the mesh
+        Args:
+            x: x coordinate (numeric)
+            y: y coordinate (numeric)
+
+        Returns:
+            in_mesh: a boolean of whether a point is within the bound of the mesh
+        """
+        return len(self.find_simplices(x, y)) > 0
 
     def find_simplices(self, x, y) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
         """
