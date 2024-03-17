@@ -1,5 +1,5 @@
 from trimesh import Trimesh
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 
@@ -53,6 +53,10 @@ class CustomTriMesh:
         aspect_ratio = (self.max_x - self.min_x) / (self.max_y - self.min_y)
         self.img_width = int(num_pixels * aspect_ratio)
         self.img_height = int(num_pixels * (1 / aspect_ratio))
+
+        # Create the colour map for our depth map
+        self.viridis = np.asarray(plt.get_cmap('viridis').reversed().colors) * 255
+        self.viridis = self.viridis.astype(dtype=np.uint8)
 
     def _get_bin_indices_(self, x, y) -> tuple[int, int]:
         """
@@ -118,17 +122,18 @@ class CustomTriMesh:
 
     def _scale_z_depth_to_colour(self, z_depth):
         """
-        Returns a 3 element integer array to represent an RGB colour. Scales from blue to red, where red is shallow
-        and blue is deep
+        Returns a 3 element integer array to represent an RGB colour. Scales according to the Viridis colour map,
+        which has been designed to support colour blindness
+        https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0199239
+
         Args:
             z_depth: a depth reading
 
         Returns:
             colour: a 3 element integer array to represent an RGB colour
         """
-        scaling_factor = float(z_depth) / float(self.max_z)
-
-        return np.asarray([int(255*1/scaling_factor), int(255*scaling_factor), 0])
+        colour_idx = int(255 * (z_depth / self.min_z))
+        return self.viridis[colour_idx]
 
     # @timed
     def _build_image_representation(self) -> None:
@@ -138,9 +143,9 @@ class CustomTriMesh:
         Returns:
             None
         """
-        self.original_image = np.zeros((self.img_height, self.img_width, 3))
-        white = np.asarray([255]*3)
-        black = np.asarray([0]*3)
+        self.original_image = np.zeros((self.img_height, self.img_width, 3), dtype=np.uint8)
+        white = np.asarray([255]*3, dtype=np.uint8)
+        black = np.asarray([0]*3, dtype=np.uint8)
 
         # get actual x and y coordinates
         x_coords = self._x_image_index_to_coordinate_build(np.asarray(range(self.img_height)))
@@ -148,6 +153,7 @@ class CustomTriMesh:
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
                 rotated_vector = get_x_y_rotated_vector(np.asarray([x, y]), -(np.pi / 2))
+                depth = self.get_shallowest_depth(rotated_vector[0], rotated_vector[1])
                 self.original_image[i][j] = white if self.point_in_mesh(rotated_vector[0], rotated_vector[1]) else black
 
     def _show_image_(self) -> None:
