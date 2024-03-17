@@ -64,7 +64,8 @@ def parse_args(args):
                         action=ParseErrorPipeline,
                         nargs="+",
                         help="A list describing the error introduction pipeline. Current formats:\n"
-                             "\tnoise@0.05 - A random percent of noise present in a sensor. Plus or minus the value.\n"
+                             "\tnoise@0.05 - A random percent of noise present in a sensor. The value will be the "
+                             "3-sigma level in a Gaussian distribution.\n"
                              "\tfb@10 - A random rectangle representing a debris field with a specified square area "
                              "that causes a false bottom reading.\n"
                              "\tdrop@0.01 - A random percent change that the sensor will dropout.",

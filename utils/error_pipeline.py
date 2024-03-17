@@ -33,6 +33,9 @@ class Noise(ErrorType):
         if error_rate > 1 or error_rate < 0:
             raise ValueError("Noise error rate must be between 0 and 1")
         self.err_rate = error_rate
+        self.mean = 0
+        # We want our error rate to be the 3-sigma bounds, or about 99.9973% of readings within it
+        self.stddev = error_rate / 3
 
     def eval(self, vector, seed=None, *args, **kwargs):
         """
@@ -45,7 +48,7 @@ class Noise(ErrorType):
             new_vector: an [x y z] vector with some error applied to it.
         """
         random.seed(seed)
-        new_vector = (vector[0], vector[1], vector[2] + random.uniform(-self.err_rate, self.err_rate) * vector[2])
+        new_vector = (vector[0], vector[1], vector[2] + random.gauss(self.mean, self.stddev) * vector[2])
         return new_vector
 
     def __eq__(self, other):
