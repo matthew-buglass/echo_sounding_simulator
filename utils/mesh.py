@@ -118,14 +118,17 @@ class CustomTriMesh:
 
     def _scale_z_depth_to_colour(self, z_depth):
         """
-        Returns a 3 element integer array to represent an RGB colour
+        Returns a 3 element integer array to represent an RGB colour. Scales from blue to red, where red is shallow
+        and blue is deep
         Args:
             z_depth: a depth reading
 
         Returns:
             colour: a 3 element integer array to represent an RGB colour
         """
-        return np.asarray([255]*3)
+        scaling_factor = float(z_depth) / float(self.max_z)
+
+        return np.asarray([int(255*1/scaling_factor), int(255*scaling_factor), 0])
 
     # @timed
     def _build_image_representation(self) -> None:
