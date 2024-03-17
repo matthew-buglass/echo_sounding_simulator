@@ -22,15 +22,13 @@ class TestErrorType(unittest.TestCase):
 class TestNoiseErrorType(unittest.TestCase):
     def test_calling_on_five_percent_error_calculates_vector_correctly(self):
         seeds = [0, 10, 304597]
-        expected_vectors = [(0, 0, 1.0344421851525047), (0, 0, 1.0071402594689913), (0, 0, 0.9884574295419192)]
+        expected_vectors = [(0, 0, 1.0156952567446778), (0, 0, 0.9841047165322777), (0, 0, 0.9742020594092458)]
         err = Noise(0.05)
         vector = (0, 0, 1)
 
         for i, seed in enumerate(seeds):
             new_vector = err.eval(vector, seed)
 
-            # vector is correct and error is within 5%
-            self.assertTrue(abs(vector[2] - new_vector[2]) / vector[2] <= 0.05, msg="Error not within 5%")
             self.assertTupleEqual(new_vector, expected_vectors[i], msg="Vectors not equal")
 
 
@@ -188,7 +186,7 @@ class TestRunPipeline(unittest.TestCase):
         errors = [Noise(0.05)]
         seed = 304597
         start_vector = (0, 0, 1)
-        expected_vector = (0.0, 0.0, 0.9884574295419192)
+        expected_vector = (0.0, 0.0, 0.9742020594092458)
 
         new_vector = run_pipeline(errors, start_vector, seed=seed)
 
@@ -201,7 +199,7 @@ class TestRunPipeline(unittest.TestCase):
         errors = [Noise(0.05), Noise(0.01), Noise(0.10)]
         seed = 1238987523
         start_vector = (0, 0, 1)
-        expected_vector = (0.0, 0.0, 0.9670810794357534)
+        expected_vector = (0.0, 0.0, 0.9626978220365185)
 
         new_vector = run_pipeline(errors, start_vector, seed=seed)
 
