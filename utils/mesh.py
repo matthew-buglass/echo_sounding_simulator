@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 
-from utils.geometry import point_in_tri, triangular_plane_intercept, get_x_y_rotated_vector
+from utils.geometry import point_in_tri, triangular_plane_intercept
 from utils.timing import timed
 
 
@@ -117,7 +117,7 @@ class CustomTriMesh:
             colour: a 3 element integer array to represent an RGB colour
         """
         # Because of our error pipeline we need to cap this on either end
-        colour_idx = max(0, min(int(255 * (z_depth / self.min_z)), len(self.viridis)-1))
+        colour_idx = max(0, min(int(255 * (z_depth / self.min_z)), len(self.viridis) - 1))
         return self.viridis[colour_idx]
 
     # @timed
@@ -129,8 +129,8 @@ class CustomTriMesh:
             None
         """
         self.original_image = np.zeros((self.img_height, self.img_width, 3), dtype=np.uint8)
-        white = np.asarray([255]*3, dtype=np.uint8)
-        black = np.asarray([0]*3, dtype=np.uint8)
+        white = np.asarray([255] * 3, dtype=np.uint8)
+        black = np.asarray([0] * 3, dtype=np.uint8)
 
         # get actual x and y coordinates
         x_coords, y_coords = self._image_indices_to_mesh_coordinates(

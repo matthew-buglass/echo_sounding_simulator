@@ -42,10 +42,10 @@ class TestMesh(unittest.TestCase):
             (0, self.mesh.img_height)
         ]
         expected_coords = np.asarray([
+            (-10, -10),
             (-10, 10),
             (10, 10),
-            (10, -10),
-            (-10, -10)
+            (10, -10)
         ])
 
         # Execute
