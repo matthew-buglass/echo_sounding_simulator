@@ -1,9 +1,9 @@
 from trimesh import Trimesh
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 
-from utils.geometry import point_in_tri, triangular_plane_intercept, get_x_y_rotated_vector
+from utils.geometry import point_in_tri, triangular_plane_intercept
 from utils.timing import timed
 
 
@@ -54,6 +54,10 @@ class CustomTriMesh:
         self.img_width = int(num_pixels * aspect_ratio)
         self.img_height = int(num_pixels * (1 / aspect_ratio))
 
+        # Create the colour map for our depth map
+        self.viridis = np.asarray(plt.get_cmap('viridis').reversed().colors) * 255
+        self.viridis = self.viridis.astype(dtype=np.uint8)
+
     def _get_bin_indices_(self, x, y) -> tuple[int, int]:
         """
         Returns the x and y bin idxs of an x, y point
@@ -70,72 +74,85 @@ class CustomTriMesh:
 
         return x_idx, y_idx
 
-    def _x_image_index_to_coordinate_build(self, x_idx: int) -> float:
+    def _image_indices_to_mesh_coordinates(self, x_idx: np.ndarray[int] | int, y_idx: np.ndarray[int] | int) \
+            -> tuple[np.ndarray[float], np.ndarray[float]] | tuple[float, float]:
         """
-        Converts a pixel index into a real x-coordinate
+        Converts x and y pixel indices into a real coordinates
         Args:
             x_idx: the width index of an image
+            y_idx: the height index of the image
 
         Returns:
             The real x position value
         """
-        return ((x_idx / self.img_width) * (self.max_x - self.min_x)) + self.min_x
+        x_coords = ((x_idx / self.img_width) * (self.max_x - self.min_x)) + self.min_x
+        y_coords = ((y_idx / self.img_height) * (self.max_y - self.min_y)) + self.min_y
+        return x_coords, y_coords
 
-    def _y_image_index_to_coordinate_build(self, y_idx: int) -> float:
+    def _mesh_coordinates_to_image_indices(self, x_cord: np.ndarray[float] | float, y_cord: np.ndarray[float] | float) \
+            -> tuple[np.ndarray[int], np.ndarray[int]] | tuple[int, int]:
         """
-        Converts a pixel index into a real y-coordinate
+        Converts real x and y coordinates into a pixel indices
         Args:
-            y_idx: the height index of an image
+            x_cord: The real x position value
+            y_cord: The real y position value
 
         Returns:
-            The real y position value
+            The width index of an image
         """
-        return ((y_idx / self.img_height) * (self.max_y - self.min_y)) + self.min_y
+        x_idx = int(((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width)
+        y_idx = int(((y_cord - self.min_y) / (self.max_y - self.min_y)) * self.img_height)
+        return x_idx, y_idx
 
-    def _x_image_index_to_coordinate_display(self, x_idx: int) -> float:
+    def _scale_z_depth_to_colour(self, z_depth):
         """
-        Converts a pixel index into a real x-coordinate
+        Returns a 3 element integer array to represent an RGB colour. Scales according to the Viridis colour map,
+        which has been designed to support colour blindness
+        https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0199239
+
         Args:
-            x_idx: the width index of an image
+            z_depth: a depth reading
 
         Returns:
-            The real x position value
+            colour: a 3 element integer array to represent an RGB colour
         """
-        return self._x_image_index_to_coordinate_build(x_idx)
-
-    def _y_image_index_to_coordinate_display(self, y_idx: int) -> float:
-        """
-        Converts a pixel index into a real y-coordinate
-        Args:
-            y_idx: the height index of an image
-
-        Returns:
-            The real y position value
-        """
-        # We have to flip the y position, as images index (0,0) in top left,
-        # while cartesian normal origin is bottom left
-        return (((self.img_height - y_idx) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
+        # Because of our error pipeline we need to cap this on either end
+        colour_idx = max(0, min(int(255 * (z_depth / self.min_z)), len(self.viridis) - 1))
+        return self.viridis[colour_idx]
 
     # @timed
     def _build_image_representation(self) -> None:
         """
-        Builds a top-down image representation of the mesh with a given height and width
+        Builds an initial top-down image representation of the mesh with a given height and width
 
         Returns:
             None
         """
-        self.image = np.zeros((self.img_height, self.img_width))
+        self.original_image = np.zeros((self.img_height, self.img_width, 3), dtype=np.uint8)
+        white = np.asarray([255] * 3, dtype=np.uint8)
+        black = np.asarray([0] * 3, dtype=np.uint8)
 
         # get actual x and y coordinates
-        x_coords = self._x_image_index_to_coordinate_build(np.asarray(range(self.img_height)))
-        y_coords = self._y_image_index_to_coordinate_build(np.asarray(range(self.img_width)))
+        x_coords, y_coords = self._image_indices_to_mesh_coordinates(
+            np.asarray(range(self.img_height)), np.asarray(range(self.img_width))
+        )
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
-                rotated_vector = get_x_y_rotated_vector(np.asarray([x, y]), -(np.pi / 2))
-                self.image[i][j] = self.get_shallowest_depth(rotated_vector[0], rotated_vector[1]) or self.min_z
+                self.original_image[i][j] = white if self.point_in_mesh(x, y) else black
 
-        # Scale the image
-        self.original_image = ((self.image - self.image.min()) * (1 / (self.image.max() - self.image.min()) * 255)).astype('uint8')
+    def add_depth_reading(self, depth_vector) -> None:
+        """
+        Marks on the image representation a depth reading
+        Args:
+            depth_vector: a vector of [x y z] coordinates
+
+        Returns:
+            None
+        """
+        i, j = self._mesh_coordinates_to_image_indices(depth_vector[0], depth_vector[1])
+        colour = self._scale_z_depth_to_colour(depth_vector[2])
+
+        self.original_image[i][j] = colour
 
     def _show_image_(self) -> None:
         """
@@ -152,21 +169,21 @@ class CustomTriMesh:
         Returns:
             A list of start and end points of a path that the ship will take
         """
-        return [
-            (self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y))
-            for x, y in self.image_coords
-        ]
+        # we have to do a transform here because of the differences in image and array indexing
+        return [self._image_indices_to_mesh_coordinates(x, y) for y, x in self.image_coords]
 
     def get_path_over_mesh(self) -> list[tuple[float, float]]:
         """
-        Shows a top-down image representation of an image
+        Shows a top-down image representation of an image and takes user input to draw a path
 
         Returns:
-            A list of start and end points of a path that the ship will take
+            A list of start and end points of a path that the ship will take, if a path was given, and empty list
+            otherwise
         """
         if self.original_image is None:
             self._build_image_representation()
-            self.current_image = self.original_image.copy()
+
+        self.current_image = self.original_image.copy()
 
         cv2.namedWindow(self.image_window_name)
         cv2.setMouseCallback(self.image_window_name, self._read_mouse_inputs_)
@@ -178,6 +195,7 @@ class CustomTriMesh:
             # Close program with keyboard 'q'
             if key == ord('q'):
                 cv2.destroyAllWindows()
+                return []
 
         return self._process_out_coordinates_()
 
@@ -186,8 +204,8 @@ class CustomTriMesh:
         Reads mouse inputs on the mesh image being displayed
         Args:
             event: The event thrown by cv2
-            x: the x position of the mouse
-            y: the y position of the mouse
+            x: the x horizontal of the mouse
+            y: the y vertical of the mouse
             flags:
             parameters:
 
@@ -201,7 +219,7 @@ class CustomTriMesh:
             self.image_coords = []
             self.current_image = self.original_image.copy()
             self.image_coords.append((x, y))
-            print(f"started drawing at {(x, y)}")
+            print(f"started drawing at {(y, x)}")
 
         # Draw as the mouse is moved
         elif event == cv2.EVENT_MOUSEMOVE:
@@ -210,14 +228,14 @@ class CustomTriMesh:
                 if self.drawing:
                     if self.image_coords[-1] != (x, y):
                         self.image_coords.append((x, y))
-                        print(f"drawn to {(x, y)}")
+                        print(f"drawn to {(y, x)}")
                         cv2.line(self.current_image, self.image_coords[-2], self.image_coords[-1], (0, 0, 0), 2)
                         self._show_image_()
         # Stop drawing when the mouse lifts
         elif event == cv2.EVENT_LBUTTONUP:
             self.drawing = False
             self.image_coords.append((x, y))
-            print(f"stopped drawing at {(x, y)}")
+            print(f"stopped drawing at {(y, x)}")
 
             # Draw line
             cv2.line(self.current_image, self.image_coords[-2], self.image_coords[-1], (0, 0, 0), 2)
@@ -228,6 +246,18 @@ class CustomTriMesh:
             self.image_coords = []
             self.current_image = self.original_image.copy()
             self._show_image_()
+
+    def point_in_mesh(self, x, y) -> bool:
+        """
+        Returns whether a point is within the mesh
+        Args:
+            x: x coordinate (numeric)
+            y: y coordinate (numeric)
+
+        Returns:
+            in_mesh: a boolean of whether a point is within the bound of the mesh
+        """
+        return len(self.find_simplices(x, y)) > 0
 
     def find_simplices(self, x, y) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
         """

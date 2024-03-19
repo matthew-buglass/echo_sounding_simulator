@@ -5,6 +5,7 @@ mkdocs==1.5.3
 mkdocstrings-python==1.8.0
 mkdocs-material==9.5.3
 opencv-python==4.9.0.80
+matplotlib==3.8.3
 
 # Testing utils
 coverage==7.4.0
