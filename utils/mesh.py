@@ -74,75 +74,35 @@ class CustomTriMesh:
 
         return x_idx, y_idx
 
-    def _x_image_index_to_coordinate_build(self, x_idx: int) -> float:
+    def _image_indices_to_mesh_coordinates(self, x_idx: np.ndarray[int] | int, y_idx: np.ndarray[int] | int) \
+            -> tuple[np.ndarray[float], np.ndarray[float]] | tuple[float, float]:
         """
-        Converts a pixel index into a real x-coordinate
+        Converts x and y pixel indices into a real coordinates
         Args:
             x_idx: the width index of an image
+            y_idx: the height index of the image
 
         Returns:
             The real x position value
         """
-        return ((x_idx / self.img_width) * (self.max_x - self.min_x)) + self.min_x
+        x_coords = ((x_idx / self.img_width) * (self.max_x - self.min_x)) + self.min_x
+        y_coords = ((y_idx / self.img_height) * (self.max_y - self.min_y)) + self.min_y
+        return x_coords, y_coords
 
-    def _y_image_index_to_coordinate_build(self, y_idx: int) -> float:
+    def _mesh_coordinates_to_image_indices(self, x_cord: np.ndarray[float] | float, y_cord: np.ndarray[float] | float) \
+            -> tuple[np.ndarray[int], np.ndarray[int]] | tuple[int, int]:
         """
-        Converts a pixel index into a real y-coordinate
-        Args:
-            y_idx: the height index of an image
-
-        Returns:
-            The real y position value
-        """
-        return ((y_idx / self.img_height) * (self.max_y - self.min_y)) + self.min_y
-
-    def _x_image_index_to_coordinate_display(self, x_idx: int) -> float:
-        """
-        Converts a pixel index into a real x-coordinate
-        Args:
-            x_idx: the width index of an image
-
-        Returns:
-            The real x position value
-        """
-        return self._x_image_index_to_coordinate_build(x_idx)
-
-    def _y_image_index_to_coordinate_display(self, y_idx: int) -> float:
-        """
-        Converts a pixel index into a real y-coordinate
-        Args:
-            y_idx: the height index of an image
-
-        Returns:
-            The real y position value
-        """
-        # We have to flip the y position, as images index (0,0) in top left,
-        # while cartesian normal origin is bottom left
-        return (((self.img_height - y_idx) / self.img_height) * (self.max_y - self.min_y)) + self.min_y
-
-    def _x_coordinate_display_to_image_index(self, x_cord: float) -> int:
-        """
-        Converts a real x-coordinate into a pixel index
+        Converts real x and y coordinates into a pixel indices
         Args:
             x_cord: The real x position value
+            y_cord: The real y position value
 
         Returns:
             The width index of an image
         """
-        return int(((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width)
-
-    def _y_coordinate_display_to_image_index(self, y_cord: float) -> int:
-        """
-        Converts a real y-coordinate into a pixel index
-        Args:
-            y_cord: The real y position value
-
-        Returns:
-            The height index of an image
-        """
-        # We have to flip the y position, as images index (0,0) in top left,
-        # while cartesian normal origin is bottom left
-        return int(self.img_height - ((y_cord - self.min_y) / (self.max_y - self.min_y) * self.img_height))
+        x_idx = int(((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width)
+        y_idx = int(((y_cord - self.min_y) / (self.max_y - self.min_y)) * self.img_height)
+        return x_idx, y_idx
 
     def _scale_z_depth_to_colour(self, z_depth):
         """
@@ -156,7 +116,8 @@ class CustomTriMesh:
         Returns:
             colour: a 3 element integer array to represent an RGB colour
         """
-        colour_idx = int(255 * (z_depth / self.min_z))
+        # Because of our error pipeline we need to cap this on either end
+        colour_idx = max(0, min(int(255 * (z_depth / self.min_z)), len(self.viridis)-1))
         return self.viridis[colour_idx]
 
     # @timed
@@ -172,12 +133,12 @@ class CustomTriMesh:
         black = np.asarray([0]*3, dtype=np.uint8)
 
         # get actual x and y coordinates
-        x_coords = self._x_image_index_to_coordinate_build(np.asarray(range(self.img_height)))
-        y_coords = self._y_image_index_to_coordinate_build(np.asarray(range(self.img_width)))
+        x_coords, y_coords = self._image_indices_to_mesh_coordinates(
+            np.asarray(range(self.img_height)), np.asarray(range(self.img_width))
+        )
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
-                rotated_vector = get_x_y_rotated_vector(np.asarray([x, y]), -(np.pi / 2))
-                self.original_image[i][j] = white if self.point_in_mesh(rotated_vector[0], rotated_vector[1]) else black
+                self.original_image[i][j] = white if self.point_in_mesh(x, y) else black
 
     def add_depth_reading(self, depth_vector) -> None:
         """
@@ -188,8 +149,7 @@ class CustomTriMesh:
         Returns:
             None
         """
-        i = self._x_coordinate_display_to_image_index(depth_vector[0])
-        j = self._y_coordinate_display_to_image_index(depth_vector[1])
+        i, j = self._mesh_coordinates_to_image_indices(depth_vector[0], depth_vector[1])
         colour = self._scale_z_depth_to_colour(depth_vector[2])
 
         self.original_image[i][j] = colour
@@ -210,10 +170,7 @@ class CustomTriMesh:
             A list of start and end points of a path that the ship will take
         """
         # we have to do a transform here because of the differences in image and array indexing
-        return [
-            (self._x_image_index_to_coordinate_display(x), self._y_image_index_to_coordinate_display(y))
-            for y, x in self.image_coords
-        ]
+        return [self._image_indices_to_mesh_coordinates(x, y) for y, x in self.image_coords]
 
     def get_path_over_mesh(self) -> list[tuple[float, float]]:
         """
