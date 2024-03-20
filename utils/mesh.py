@@ -16,6 +16,7 @@ class CustomTriMesh:
             mesh: A Trimesh object that this utilit class wraps
             field_split: an integer value of how many boxes to split the search field into when looking for points
         """
+        print("Instantiating the mesh")
         self.mesh = mesh
 
         self.search_field = np.empty(shape=(field_split, field_split), dtype=list)
@@ -49,7 +50,7 @@ class CustomTriMesh:
         self.image_coords = []
         self.drawing = False
 
-        num_pixels = 256
+        num_pixels = 500
         aspect_ratio = (self.max_x - self.min_x) / (self.max_y - self.min_y)
         self.img_width = int(num_pixels * aspect_ratio)
         self.img_height = int(num_pixels * (1 / aspect_ratio))
@@ -120,7 +121,7 @@ class CustomTriMesh:
         colour_idx = max(0, min(int(255 * (z_depth / self.min_z)), len(self.viridis) - 1))
         return self.viridis[colour_idx]
 
-    # @timed
+    @timed
     def _build_image_representation(self) -> None:
         """
         Builds an initial top-down image representation of the mesh with a given height and width
@@ -128,6 +129,7 @@ class CustomTriMesh:
         Returns:
             None
         """
+        print("Generating top-down image representation")
         self.original_image = np.zeros((self.img_height, self.img_width, 3), dtype=np.uint8)
         grey = np.asarray([159, 159, 159], dtype=np.uint8)
         black = np.asarray([0] * 3, dtype=np.uint8)
