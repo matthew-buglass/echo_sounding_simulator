@@ -140,11 +140,12 @@ class CustomTriMesh:
             for j, y in enumerate(y_coords):
                 self.original_image[i][j] = grey if self.point_in_mesh(x, y) else black
 
-    def add_depth_reading(self, depth_vector) -> None:
+    def add_depth_reading(self, depth_vector, radius=1) -> None:
         """
         Marks on the image representation a depth reading
         Args:
             depth_vector: a vector of [x y z] coordinates
+            radius: and integer of surrounding pixels to also assign the colour to. Put 0 for just the specific pixel/
 
         Returns:
             None
@@ -152,7 +153,10 @@ class CustomTriMesh:
         i, j = self._mesh_coordinates_to_image_indices(depth_vector[0], depth_vector[1])
         colour = self._scale_z_depth_to_colour(depth_vector[2])
 
-        self.original_image[i][j] = colour
+        # Add the path to surrounding pixels as well to improve visibility
+        for a in range(i-radius, i+radius+1):
+            for b in range(j-radius, j+radius+1):
+                self.original_image[a][b] = colour
 
     def _show_image_(self) -> None:
         """
