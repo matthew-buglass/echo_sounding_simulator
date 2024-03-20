@@ -102,7 +102,7 @@ class CustomTriMesh:
         """
         x_idx = int(((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width)
         y_idx = int(((y_cord - self.min_y) / (self.max_y - self.min_y)) * self.img_height)
-        return x_idx, y_idx
+        return max(0, min(x_idx, self.img_width)), max(0, min(y_idx, self.img_height))
 
     def _scale_z_depth_to_colour(self, z_depth):
         """
@@ -129,7 +129,7 @@ class CustomTriMesh:
             None
         """
         self.original_image = np.zeros((self.img_height, self.img_width, 3), dtype=np.uint8)
-        white = np.asarray([255] * 3, dtype=np.uint8)
+        grey = np.asarray([159, 159, 159], dtype=np.uint8)
         black = np.asarray([0] * 3, dtype=np.uint8)
 
         # get actual x and y coordinates
@@ -138,7 +138,7 @@ class CustomTriMesh:
         )
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
-                self.original_image[i][j] = white if self.point_in_mesh(x, y) else black
+                self.original_image[i][j] = grey if self.point_in_mesh(x, y) else black
 
     def add_depth_reading(self, depth_vector) -> None:
         """
