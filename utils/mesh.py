@@ -157,8 +157,8 @@ class CustomTriMesh:
         colour = self._scale_z_depth_to_colour(depth_vector[2])
 
         # Add the path to surrounding pixels as well to improve visibility
-        for a in range(max(0, i-radius), min(i+radius+1, x)):
-            for b in range(max(0, j-radius), min(j+radius+1, y)):
+        for a in range(max(0, i - radius), min(i + radius + 1, x)):
+            for b in range(max(0, j - radius), min(j + radius + 1, y)):
                 self.original_image[a][b] = colour
 
     def _show_image_(self) -> None:
