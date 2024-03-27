@@ -152,12 +152,13 @@ class CustomTriMesh:
         Returns:
             None
         """
+        x, y, _ = self.original_image.shape
         i, j = self._mesh_coordinates_to_image_indices(depth_vector[0], depth_vector[1])
         colour = self._scale_z_depth_to_colour(depth_vector[2])
 
         # Add the path to surrounding pixels as well to improve visibility
-        for a in range(i-radius, i+radius+1):
-            for b in range(j-radius, j+radius+1):
+        for a in range(max(0, i-radius), min(i+radius+1, x)):
+            for b in range(max(0, j-radius), min(j+radius+1, y)):
                 self.original_image[a][b] = colour
 
     def _show_image_(self) -> None:
@@ -190,6 +191,7 @@ class CustomTriMesh:
             self._build_image_representation()
 
         self.current_image = self.original_image.copy()
+        self.image_coords = []
 
         cv2.namedWindow(self.image_window_name)
         cv2.setMouseCallback(self.image_window_name, self._read_mouse_inputs_)
