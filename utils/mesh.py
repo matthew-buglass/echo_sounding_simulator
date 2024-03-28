@@ -16,6 +16,7 @@ class CustomTriMesh:
             mesh: A Trimesh object that this utilit class wraps
             field_split: an integer value of how many boxes to split the search field into when looking for points
         """
+        print("Instantiating the mesh")
         self.mesh = mesh
 
         self.search_field = np.empty(shape=(field_split, field_split), dtype=list)
@@ -49,7 +50,7 @@ class CustomTriMesh:
         self.image_coords = []
         self.drawing = False
 
-        num_pixels = 256
+        num_pixels = 500
         aspect_ratio = (self.max_x - self.min_x) / (self.max_y - self.min_y)
         self.img_width = int(num_pixels * aspect_ratio)
         self.img_height = int(num_pixels * (1 / aspect_ratio))
@@ -100,8 +101,12 @@ class CustomTriMesh:
         Returns:
             The width index of an image
         """
-        x_idx = int(((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width)
-        y_idx = int(((y_cord - self.min_y) / (self.max_y - self.min_y)) * self.img_height)
+        x_idx = ((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width
+        y_idx = ((y_cord - self.min_y) / (self.max_y - self.min_y)) * self.img_height
+
+        x_idx = min(max(0, int(x_idx)), self.img_width - 1)
+        y_idx = min(max(0, int(y_idx)), self.img_width - 1)
+
         return x_idx, y_idx
 
     def _scale_z_depth_to_colour(self, z_depth):
@@ -120,7 +125,7 @@ class CustomTriMesh:
         colour_idx = max(0, min(int(255 * (z_depth / self.min_z)), len(self.viridis) - 1))
         return self.viridis[colour_idx]
 
-    # @timed
+    @timed
     def _build_image_representation(self) -> None:
         """
         Builds an initial top-down image representation of the mesh with a given height and width
@@ -128,8 +133,9 @@ class CustomTriMesh:
         Returns:
             None
         """
+        print("Generating top-down image representation")
         self.original_image = np.zeros((self.img_height, self.img_width, 3), dtype=np.uint8)
-        white = np.asarray([255] * 3, dtype=np.uint8)
+        grey = np.asarray([159, 159, 159], dtype=np.uint8)
         black = np.asarray([0] * 3, dtype=np.uint8)
 
         # get actual x and y coordinates
@@ -138,21 +144,26 @@ class CustomTriMesh:
         )
         for i, x in enumerate(x_coords):
             for j, y in enumerate(y_coords):
-                self.original_image[i][j] = white if self.point_in_mesh(x, y) else black
+                self.original_image[i][j] = grey if self.point_in_mesh(x, y) else black
 
-    def add_depth_reading(self, depth_vector) -> None:
+    def add_depth_reading(self, depth_vector, radius=1) -> None:
         """
         Marks on the image representation a depth reading
         Args:
             depth_vector: a vector of [x y z] coordinates
+            radius: and integer of surrounding pixels to also assign the colour to. Put 0 for just the specific pixel/
 
         Returns:
             None
         """
+        x, y, _ = self.original_image.shape
         i, j = self._mesh_coordinates_to_image_indices(depth_vector[0], depth_vector[1])
         colour = self._scale_z_depth_to_colour(depth_vector[2])
 
-        self.original_image[i][j] = colour
+        # Add the path to surrounding pixels as well to improve visibility
+        for a in range(max(0, i - radius), min(i + radius + 1, x)):
+            for b in range(max(0, j - radius), min(j + radius + 1, y)):
+                self.original_image[a][b] = colour
 
     def _show_image_(self) -> None:
         """
@@ -184,6 +195,7 @@ class CustomTriMesh:
             self._build_image_representation()
 
         self.current_image = self.original_image.copy()
+        self.image_coords = []
 
         cv2.namedWindow(self.image_window_name)
         cv2.setMouseCallback(self.image_window_name, self._read_mouse_inputs_)
