@@ -101,9 +101,13 @@ class CustomTriMesh:
         Returns:
             The width index of an image
         """
-        x_idx = int(((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width)
-        y_idx = int(((y_cord - self.min_y) / (self.max_y - self.min_y)) * self.img_height)
-        return max(0, min(x_idx, self.img_width)), max(0, min(y_idx, self.img_height))
+        x_idx = ((x_cord - self.min_x) / (self.max_x - self.min_x)) * self.img_width
+        y_idx = ((y_cord - self.min_y) / (self.max_y - self.min_y)) * self.img_height
+
+        x_idx = min(max(0, int(x_idx)), self.img_width - 1)
+        y_idx = min(max(0, int(y_idx)), self.img_width - 1)
+
+        return x_idx, y_idx
 
     def _scale_z_depth_to_colour(self, z_depth):
         """

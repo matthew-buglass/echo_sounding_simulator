@@ -56,12 +56,10 @@ class TestMesh(unittest.TestCase):
         self.assertTrue(np.equal(expected_coords, actual_coords).all())
 
     def test_index_to_coordinate_conversion_is_correct(self):
-        expected_x_coords = [2.0, -10.0, 28.48, 14.920002, 11.96]
-        expected_x_image_idxs = [300, 0, 962, 623, 549]
-        expected_y_coords = [-8.84, 3.84, 19.52, -10.0, 29.2]
-        expected_y_image_idxs = [29, 346, 738, 0, 980]
-
-
+        expected_x_coords = [2.0, -10.0, 9.96, 5, -0.5199999999999996]
+        expected_x_image_idxs = [300, 0, 499, 375, 237]
+        expected_y_coords = [-8.84, 3.84, -0.5199999999999996, -10.0, 7.6]
+        expected_y_image_idxs = [29, 346, 237, 0, 440]
 
         for i in range(len(expected_x_coords)):
             expected_x_coord = expected_x_coords[i]
