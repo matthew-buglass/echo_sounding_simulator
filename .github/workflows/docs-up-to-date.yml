@@ -12,9 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Rebuild docs
-      run: |
-        ./build_docs_site.sh
-      shell: bash
+      run: bash build_docs_site.sh
     # We check if the number of changes are greater than 1 because the sitemap will always change
     - name: Check that no differences exist
       run: |
