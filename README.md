@@ -91,9 +91,49 @@ session with http://localhost:8000/ with the following payload:
 ```
 
 ### Sample Rate
+The sample rate represents at what rate the simulated sensor will read datapoints. The sample rate is measured in Hertz
+(1Hz = 1 sample per second).
 
 ### Errors
+The errors parameter declares the error pipeline to apply to the sensor.The possible errors that can be applied to
+the mesh are:
+
+- `noise`: Gaussian distributed noise profile
+- `fb`: False bottom islands
+- `drop`: Sensor drop-out
+
+Errors are applied as a pipeline in the order that they are declared in the CLI, so you can have as many, or as few as
+you would like. If no errors are declared, then the resulting data will be the true depth of the mesh. 
+
+#### Noise
+All sensors have a noise profile associated with their readings. In this simulator, we assume the noise is Normally 
+distributed around the true depth with a percent standard deviation equal to one-third of the provided value. 
+For example, if you were to use `-e noise@0.1`, then the noise profile of the sensor would $\pm 10%$ around the ture
+depth at three standard deviations.
+
+#### False Bottom
+False bottom readings occur due to sensor malfunctions or debris floating in the water column. This simulator models 
+debris fields as unmoving and persistent, so re-sampling an area will read the same depth. The number after the `@` is 
+the area (in square meters) of the false bottom reading (island) that will be randomly placed in the search space. So 
+if you were to specify `-e fb@20 fb@10`, then two islands, one $10m^2$ and one $20m^2$, will be randomly placed within
+the search space.
+
+#### Drop-out
+Sensor dropouts occur when a sensor stops reading depths and records a `0` instead. This has been modeled with a 
+stochastic trailing so that clusters of dropouts can happen together. So if a dropout happens, for the next few 
+readings, there will be a higher chance of the sensor dropping out. The change of a dropout occurring is specified 
+after the `@` symbol. For example, if you were to specify `-e drop@0.05` there is a base 5% chance of the sensor 
+dropping out. Then, if a string of dropouts were to happen, the chances of a dropout on those subsequent readings would
+be 10%, 7.5%, 6.25%, etc.
 
 ### Velocity
+The velocity is the speed at which the vessel crosses the sample mesh. The velocity is in meters per second.
 
 ### No Wait
+
+### Wrapping it up
+Say you were to run:
+
+```shell
+$ python echo_sound_sim.py test.stl -p drawn -e fb@30 fb@40 fb@50 noise@0.1 drop@0.01 -em csv@./out.csv --no-wait
+```
