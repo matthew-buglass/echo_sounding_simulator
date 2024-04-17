@@ -14,6 +14,7 @@ jobs:
     - name: Rebuild docs
       run: |
         ./build_docs_site.sh
+      shell: bash
     # We check if the number of changes are greater than 1 because the sitemap will always change
     - name: Check that no differences exist
       run: |
