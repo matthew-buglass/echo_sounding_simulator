@@ -1,3 +1,6 @@
+"""
+Declares and maintains utility decorators to time function calls
+"""
 from functools import wraps
 import time
 from typing import Callable, Any

@@ -1,3 +1,6 @@
+"""
+Declares and maintains handlers for error types to be used in the pipeline
+"""
 import random
 from abc import ABC, abstractmethod
 

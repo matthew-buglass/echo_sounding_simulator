@@ -911,7 +911,8 @@ datapoints coloured using a Viridis colour map; deeper is darker and shallower i
 <img alt="drawn map" src="readme_imgs/drawn_search_map.png" /> 
 <img alt="sampled map" src="readme_imgs/sampled_search_map.png" /></p>
 <h3 id="emitter-type">Emitter Type</h3>
-<p>This declares how you want your sampled data to be emitted. The options are <code>csv</code>, <code>tsv</code>, or <code>endpoint</code>.</p>
+<p>This declares how you want your sampled data to be emitted. The options are <code>csv</code>, <code>tsv</code>, or <code>endpoint</code>, but by default
+the data will be printed to console.</p>
 <h4 id="csv">CSV</h4>
 <p>The csv format will emit each datapoint as <code>x,y,z</code> coordinates into a csv file. The location is specified after the 
 <code>@</code> symbol. So adding <code>-em csv@out.csv</code> will write the data to a file in the current directory named <code>out.csv</code>.</p>

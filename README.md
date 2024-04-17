@@ -62,7 +62,8 @@ datapoints coloured using a Viridis colour map; deeper is darker and shallower i
 ![sampled map](./readme_imgs/sampled_search_map.png)
 
 ### Emitter Type
-This declares how you want your sampled data to be emitted. The options are `csv`, `tsv`, or `endpoint`.
+This declares how you want your sampled data to be emitted. The options are `csv`, `tsv`, or `endpoint`, but by default
+the data will be printed to console.
 
 #### CSV
 The csv format will emit each datapoint as `x,y,z` coordinates into a csv file. The location is specified after the 

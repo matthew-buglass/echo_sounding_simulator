@@ -1,3 +1,6 @@
+"""
+Declares and maintains utility function for geometric abstractions
+"""
 import numpy as np
 
 
