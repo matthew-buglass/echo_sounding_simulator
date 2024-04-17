@@ -7,6 +7,9 @@ from utils.timing import timed
 
 
 class VectorEmitter:
+    """
+    The abstract base class of an emitter. Each emitter directs the data output to a different source.
+    """
     @abc.abstractmethod
     def emit_vector(self, vector):
         raise NotImplementedError("You must override emit_vector()")
