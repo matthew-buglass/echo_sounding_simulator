@@ -15,7 +15,7 @@ jobs:
       run: |
         ./build_docs_site.sh
     # We check if the number of changes are greater than 1 because the sitemap will always change
-    - name: Check no difference
+    - name: Check that no differences exist
       run: |
         num_diffs=$(git diff --shortstat docs | cut -d' ' -f2)
         echo "Number of differences in the docs directory $num_diffs"
