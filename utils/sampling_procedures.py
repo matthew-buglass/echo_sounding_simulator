@@ -1,3 +1,6 @@
+"""
+Declares and maintains utility functions for different sampling types
+"""
 import numpy as np
 
 from utils.error_pipeline import run_pipeline

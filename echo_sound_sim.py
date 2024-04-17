@@ -1,3 +1,6 @@
+"""
+Main program entrypoint
+"""
 import sys
 import time
 

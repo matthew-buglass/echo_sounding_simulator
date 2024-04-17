@@ -1,0 +1,1116 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Matthew Buglass">
+      
+      
+      
+      
+        <link rel="next" href="module_docs/echo_sound_sim/">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Echo Sounding Simulator</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#echo-sounding-simulator" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Echo Sounding Simulator" class="md-header__button md-logo" aria-label="Echo Sounding Simulator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Echo Sounding Simulator
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Echo Sounding Simulator
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/matthew-buglass/echo_sounding_simulator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Echo Sounding Simulator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Echo Sounding Simulator" class="md-nav__button md-logo" aria-label="Echo Sounding Simulator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Echo Sounding Simulator
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/matthew-buglass/echo_sounding_simulator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Echo Sounding Simulator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Echo Sounding Simulator
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Echo Sounding Simulator
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-program" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the program
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI Arguments
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CLI Arguments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      Path Type
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Path Type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parallel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drawn" class="md-nav__link">
+    <span class="md-ellipsis">
+      Drawn
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#emitter-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      Emitter Type
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Emitter Type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      CSV
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      TSV
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Endpoint
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample Rate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Errors
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      Noise
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#false-bottom" class="md-nav__link">
+    <span class="md-ellipsis">
+      False Bottom
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drop-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      Drop-out
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#velocity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Velocity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-wait" class="md-nav__link">
+    <span class="md-ellipsis">
+      No Wait
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wrapping-it-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrapping it up
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Module docs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Module docs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="module_docs/echo_sound_sim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Echo sound sim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="module_docs/utils/cli_parsing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cli parsing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="module_docs/utils/emitters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Emitters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="module_docs/utils/error_pipeline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Error pipeline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="module_docs/utils/geometry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Geometry
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="module_docs/utils/mesh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mesh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="module_docs/utils/sampling_procedures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sampling procedures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="module_docs/utils/timing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Timing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-program" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the program
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI Arguments
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CLI Arguments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      Path Type
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Path Type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parallel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drawn" class="md-nav__link">
+    <span class="md-ellipsis">
+      Drawn
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#emitter-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      Emitter Type
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Emitter Type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      CSV
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      TSV
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Endpoint
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sample Rate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Errors
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      Noise
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#false-bottom" class="md-nav__link">
+    <span class="md-ellipsis">
+      False Bottom
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drop-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      Drop-out
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#velocity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Velocity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-wait" class="md-nav__link">
+    <span class="md-ellipsis">
+      No Wait
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wrapping-it-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrapping it up
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="echo-sounding-simulator">Echo Sounding Simulator</h1>
+<p><a href="https://github.com/matthew-buglass/echo_sounding_simulator/actions/workflows/python-test.yml"><img alt="Python Tests" src="https://github.com/matthew-buglass/echo_sounding_simulator/actions/workflows/python-test.yml/badge.svg" /></a>
+<a href="https://www.python.org"><img alt="Python" src="https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg" /></a></p>
+<p>A simulator for taking echo sounding readings during bathymetric surveys. </p>
+<h2 id="running-the-program">Running the program</h2>
+<p>The simulator takes in a 3D object, like 
+an <code>stl</code> file and samples across the surface, applying errors corresponding to the provided pipeline configuration. To
+run the application, from the project root directory, run <code>pip install -r requirements.txt</code> then 
+<code>python echo_sound_sim.py</code> with the appropriate arguments. The program assumes that the unit of the mesh is meters.</p>
+<h2 id="cli-arguments">CLI Arguments</h2>
+<pre><code class="language-text">usage: echo_sound_sim.py [-h] [-p {parallel,drawn}] [-em EMITTER_TYPE] [-sr SAMPLE_RATE] [-e ERRORS [ERRORS ...]] [-vel VELOCITY] [--no-wait] data_file
+
+positional arguments:
+  data_file             An 3D data file to represent the surface to sample
+
+options:
+  -h, --help            show this help message and exit
+  -p {parallel,drawn}, --path_type {parallel,drawn}
+                        The type of search pattern to use over the mesh
+  -em EMITTER_TYPE, --emitter_type EMITTER_TYPE
+                        Where you want to emit the result vectors, if not to stdout. Your choices are: csv@&lt;filename&gt;, tsv@&lt;filename&gt;, endpoint@&lt;url&gt;
+  -sr SAMPLE_RATE, --sample_rate SAMPLE_RATE
+                        The rate (in Hertz) at which to sample the surface. Defaults to 1hz.
+  -e ERRORS [ERRORS ...], --errors ERRORS [ERRORS ...]
+                        A list describing the error introduction pipeline. Current formats: noise@0.05 - A random percent of noise present in a sensor. The   
+                        value will be the 3-sigma level in a Gaussian distribution. fb@10 - A random rectangle representing a debris field with a specified   
+                        square area that causes a false bottom reading. drop@0.01 - A random percent change that the sensor will dropout.
+  -vel VELOCITY, --velocity VELOCITY
+                        The velocity of the research vessel in m/s. Defaults to 1 m/s (3.6 km/hr)
+  --no-wait             Flag to disable the waiting part off the simulation. If given, the sampling rate will remain the same, but the wait time between      
+                        samples will be disabled.
+</code></pre>
+<h3 id="path-type">Path Type</h3>
+<p>This is the type of sampling that you would like to do. There are two options currently available, <code>parallel</code> and 
+<code>drawn</code>. </p>
+<h4 id="parallel">Parallel</h4>
+<p>A <code>parallel</code> track search will make a perfect zig-zag across the provided mesh. </p>
+<h4 id="drawn">Drawn</h4>
+<p>The <code>drawn</code> option allows users to draw their desired path across the search space. After the mesh is read in, the user
+is presented with a window of grey and black, representing a top-down projection of the search space. The grey pixels 
+are where data exists for the mesh, and black is where data does not exist. After drawing the sample path a user can:</p>
+<ul>
+<li>Click in the window again to redraw the search path</li>
+<li>Close the window (the <code>X</code> in the top right corner)</li>
+<li>Close the application by pressing <code>q</code></li>
+</ul>
+<p>Once the sampling path is complete, the user is re-prompted with the search map but with the previously sampled 
+datapoints coloured using a Viridis colour map; deeper is darker and shallower is lighter.</p>
+<p><img alt="blank map" src="readme_imgs/blank_search_map.png" /> 
+<img alt="drawn map" src="readme_imgs/drawn_search_map.png" /> 
+<img alt="sampled map" src="readme_imgs/sampled_search_map.png" /></p>
+<h3 id="emitter-type">Emitter Type</h3>
+<p>This declares how you want your sampled data to be emitted. The options are <code>csv</code>, <code>tsv</code>, or <code>endpoint</code>, but by default
+the data will be printed to console.</p>
+<h4 id="csv">CSV</h4>
+<p>The csv format will emit each datapoint as <code>x,y,z</code> coordinates into a csv file. The location is specified after the 
+<code>@</code> symbol. So adding <code>-em csv@out.csv</code> will write the data to a file in the current directory named <code>out.csv</code>.</p>
+<h4 id="tsv">TSV</h4>
+<p>The tsv format will emit each datapoint as <code>x   y   z</code> coordinates into a csv file. The location is specified after the 
+<code>@</code> symbol. So adding <code>-em tsv@out.tsv</code> will write the data to a file in the current directory named <code>out.tsv</code>.</p>
+<h4 id="endpoint">Endpoint</h4>
+<p>The endpoint format will emit each datapoint as <code>x</code>, <code>y</code>, <code>z</code> coordinates into a provided endpoint. The endpoint is 
+specified after the <code>@</code> symbol. So adding <code>-em endpoint@http://localhost:8000/</code> will perform a <code>PUT</code> request to a 
+session with http://localhost:8000/ with the following payload:</p>
+<pre><code class="language-json">{
+    &quot;data&quot;: {
+            &quot;x&quot;: &lt;X_COORDINATE&gt;,
+            &quot;y&quot;: &lt;Y_COORDINATE&gt;,
+            &quot;z&quot;: &lt;Z_COORDINATE&gt;
+        },
+    &quot;headers&quot;: {
+        &quot;Content-Type&quot;: &quot;application/json&quot;,
+        &quot;Connection&quot;: &quot;keep-alive&quot;
+    }
+}
+</code></pre>
+<h3 id="sample-rate">Sample Rate</h3>
+<p>The sample rate represents at what rate the simulated sensor will read datapoints. The sample rate is measured in Hertz
+(1Hz = 1 sample per second).</p>
+<h3 id="errors">Errors</h3>
+<p>The errors parameter declares the error pipeline to apply to the sensor.The possible errors that can be applied to
+the mesh are:</p>
+<ul>
+<li><code>noise</code>: Gaussian distributed noise profile</li>
+<li><code>fb</code>: False bottom islands</li>
+<li><code>drop</code>: Sensor drop-out</li>
+</ul>
+<p>Errors are applied as a pipeline in the order that they are declared in the CLI, so you can have as many, or as few as
+you would like. If no errors are declared, then the resulting data will be the true depth of the mesh. </p>
+<h4 id="noise">Noise</h4>
+<p>All sensors have a noise profile associated with their readings. In this simulator, we assume the noise is Normally 
+distributed around the true depth with a percent standard deviation equal to one-third of the provided value. 
+For example, if you were to use <code>-e noise@0.1</code>, then the noise profile of the sensor would <span class="arithmatex">\(\pm\)</span>10% around the ture
+depth at three standard deviations.</p>
+<h4 id="false-bottom">False Bottom</h4>
+<p>False bottom readings occur due to sensor malfunctions or debris floating in the water column. This simulator models 
+debris fields as unmoving and persistent, so re-sampling an area will read the same depth. The number after the <code>@</code> is 
+the area (in square meters) of the false bottom reading (island) that will be randomly placed in the search space. So 
+if you were to specify <code>-e fb@20 fb@10</code>, then two islands, one <span class="arithmatex">\(10m^2\)</span> and one <span class="arithmatex">\(20m^2\)</span>, will be randomly placed within
+the search space.</p>
+<h4 id="drop-out">Drop-out</h4>
+<p>Sensor dropouts occur when a sensor stops reading depths and records a <code>0</code> instead. This has been modeled with a 
+stochastic trailing so that clusters of dropouts can happen together. So if a dropout happens, for the next few 
+readings, there will be a higher chance of the sensor dropping out. The change of a dropout occurring is specified 
+after the <code>@</code> symbol. For example, if you were to specify <code>-e drop@0.05</code> there is a base 5% chance of the sensor 
+dropping out. Then, if a string of dropouts were to happen, the chances of a dropout on those subsequent readings would
+be 10%, 7.5%, 6.25%, etc.</p>
+<h3 id="velocity">Velocity</h3>
+<p>The velocity is the speed at which the vessel crosses the sample mesh. The velocity is in meters per second.</p>
+<h3 id="no-wait">No Wait</h3>
+<p>By default, the simulator will respect the Sample Rate parameter given to it and will only emit data on that cadence. 
+So by default, with a sampling rate of 1Hz, a data point will be written every second. By adding the <code>--no-wait</code> flag,
+the simulator will calculate the position of the sample according to the sample rate and velocity, but will perform 
+that calculation and emit data as fast as it can.</p>
+<h3 id="wrapping-it-up">Wrapping it up</h3>
+<p>Say you were to run:</p>
+<pre><code class="language-shell">$ python echo_sound_sim.py test.stl -p drawn -e fb@30 fb@40 fb@50 noise@0.1 drop@0.01 -em csv@./out.csv --no-wait
+</code></pre>
+<p>Then the simulator will:</p>
+<ul>
+<li>Sample from <code>test.stl</code></li>
+<li>Allow the user to draw their sample path</li>
+<li>Add a <span class="arithmatex">\(30m^2\)</span> false bottom island</li>
+<li>Add a <span class="arithmatex">\(40m^2\)</span> false bottom island</li>
+<li>Add a <span class="arithmatex">\(50m^2\)</span> false bottom island</li>
+<li>Add 10% sensor noise</li>
+<li>Add a 1% change of sensor dropout</li>
+<li>Write the data in a csv format to the file <code>./out.csv</code></li>
+<li>Will calculate data as fast as it can</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+        <script src="javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

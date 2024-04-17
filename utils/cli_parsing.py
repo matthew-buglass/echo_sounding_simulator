@@ -1,4 +1,8 @@
+"""
+Declares and maintains handlers for command line parsing
+"""
 import argparse
+from typing import Sequence
 
 from utils.emitters import StdOutVectorEmitter, CsvVectorEmitter, TsvVectorEmitter, EndpointVectorEmitter
 from utils.error_pipeline import Noise, FalseBottom, Dropout
@@ -6,7 +10,16 @@ from utils.sampling_procedures import PATH_GENERATORS
 
 
 class ParseErrorPipeline(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
+    """
+    Action which parses arguments related to the error pipeline
+    """
+    def __call__(self, parser, namespace, values, option_string=None) -> None:
+        """
+        Adds the parsed arguments to the namespace
+
+        Returns:
+            None
+        """
         items = getattr(namespace, self.dest, None)
         for val in values:
             err_type, err_val = val.split("@")
@@ -24,7 +37,16 @@ class ParseErrorPipeline(argparse.Action):
 
 
 class ParseVectorEmitter(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
+    """
+    Action which parses arguments related to the emitter
+    """
+    def __call__(self, parser, namespace, values, option_string=None) -> None:
+        """
+        Adds the parsed arguments to the namespace
+
+        Returns:
+            None
+        """
         emitter, location = values.split("@")
         match emitter:
             case "csv":
@@ -39,7 +61,15 @@ class ParseVectorEmitter(argparse.Action):
         setattr(namespace, self.dest, item)
 
 
-def parse_args(args):
+def parse_args(args: Sequence[str]) -> argparse.Namespace:
+    """
+    Parses the command line arguments.
+    Args:
+        args: The arguments from sys.argv[1:]
+
+    Returns:
+        namespace: The parsed arguments in an argparse namespace.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("data_file",
                         help="An 3D data file to represent the surface to sample")

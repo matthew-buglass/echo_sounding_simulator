@@ -1,3 +1,6 @@
+"""
+Declares and maintains operations for maintaining and interacting with the mesh to sample from
+"""
 from trimesh import Trimesh
 import matplotlib.pyplot as plt
 import cv2

@@ -238,3 +238,7 @@ fabric.properties
 # Project Specifics
 data/
 coverage.json
+
+# Docs ignores
+docs_source/index.md
+docs_source/readme_imgs
