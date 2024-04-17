@@ -240,5 +240,5 @@ data/
 coverage.json
 
 # Docs ignores
-docs/index.md
-docs/readme_imgs
+docs_source/index.md
+docs_source/readme_imgs
