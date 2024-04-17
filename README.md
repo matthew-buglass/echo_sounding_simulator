@@ -130,6 +130,10 @@ be 10%, 7.5%, 6.25%, etc.
 The velocity is the speed at which the vessel crosses the sample mesh. The velocity is in meters per second.
 
 ### No Wait
+By default, the simulator will respect the Sample Rate parameter given to it and will only emit data on that cadence. 
+So by default, with a sampling rate of 1Hz, a data point will be written every second. By adding the `--no-wait` flag,
+the simulator will calculate the position of the sample according to the sample rate and velocity, but will perform 
+that calculation and emit data as fast as it can.
 
 ### Wrapping it up
 Say you were to run:
@@ -137,3 +141,14 @@ Say you were to run:
 ```shell
 $ python echo_sound_sim.py test.stl -p drawn -e fb@30 fb@40 fb@50 noise@0.1 drop@0.01 -em csv@./out.csv --no-wait
 ```
+
+Then the simulator will:
+- Sample from `test.stl`
+- Allow the user to draw their sample path
+- Add a $30m^2$ false bottom island
+- Add a $40m^2$ false bottom island
+- Add a $50m^2$ false bottom island
+- Add 10% sensor noise
+- Add a 1% change of sensor dropout
+- Write the data in a csv format to the file `./out.csv`
+- Will calculate data as fast as it can
