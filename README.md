@@ -65,10 +65,30 @@ datapoints coloured using a Viridis colour map; deeper is darker and shallower i
 This declares how you want your sampled data to be emitted. The options are `csv`, `tsv`, or `endpoint`.
 
 #### CSV
+The csv format will emit each datapoint as `x,y,z` coordinates into a csv file. The location is specified after the 
+`@` symbol. So adding `-em csv@out.csv` will write the data to a file in the current directory named `out.csv`.
 
 #### TSV
+The tsv format will emit each datapoint as `x   y   z` coordinates into a csv file. The location is specified after the 
+`@` symbol. So adding `-em tsv@out.tsv` will write the data to a file in the current directory named `out.tsv`.
 
 #### Endpoint
+The endpoint format will emit each datapoint as `x`, `y`, `z` coordinates into a provided endpoint. The endpoint is 
+specified after the `@` symbol. So adding `-em endpoint@http://localhost:8000/` will perform a `PUT` request to a 
+session with http://localhost:8000/ with the following payload:
+```json
+{
+    "data": {
+            "x": <X_COORDINATE>,
+            "y": <Y_COORDINATE>,
+            "z": <Z_COORDINATE>
+        },
+    "headers": {
+        "Content-Type": "application/json",
+        "Connection": "keep-alive"
+    }
+}
+```
 
 ### Sample Rate
 
