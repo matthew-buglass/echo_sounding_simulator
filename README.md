@@ -4,7 +4,8 @@
 
 [//]: # (![Test Coverage]&#40;https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/matthew-buglass/b88855f7e79729fc1cf9bd4b582012ba/raw/covbadge.json&#41;)
 
-A simulator for taking echo sounding readings during bathymetric surveys. 
+A simulator for taking echo sounding readings during bathymetric surveys. Code documentation can be found 
+[here](https://matthew-buglass.github.io/echo_sounding_simulator/).
 
 ## Running the program
 The simulator takes in a 3D object, like 
