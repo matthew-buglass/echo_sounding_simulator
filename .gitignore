@@ -238,3 +238,4 @@ fabric.properties
 # Project Specifics
 data/
 coverage.json
+docs/index.md
