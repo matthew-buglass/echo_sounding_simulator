@@ -143,6 +143,7 @@ $ python echo_sound_sim.py test.stl -p drawn -e fb@30 fb@40 fb@50 noise@0.1 drop
 ```
 
 Then the simulator will:
+
 - Sample from `test.stl`
 - Allow the user to draw their sample path
 - Add a $30m^2$ false bottom island
