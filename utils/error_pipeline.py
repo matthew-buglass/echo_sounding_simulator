@@ -24,7 +24,7 @@ class ErrorType(ABC):
 
 
 class Noise(ErrorType):
-    def __init__(self, error_rate, *args, **kwargs):
+    def __init__(self, error_rate: float, *args, **kwargs):
         """
         Adds random noise according to the error rate to the z component of a vector
 
@@ -40,7 +40,8 @@ class Noise(ErrorType):
         # We want our error rate to be the 3-sigma bounds, or about 99.9973% of readings within it
         self.stddev = error_rate / 3
 
-    def eval(self, vector, seed=None, *args, **kwargs):
+    def eval(self, vector: tuple[float, float, float], seed: float = None, *args, **kwargs) \
+            -> tuple[float, float, float]:
         """
         Applies random vertical (z) noise error processing to an [x y z] vector
         Args:
@@ -121,7 +122,7 @@ class FalseBottom(ErrorType):
         #  P1 --- P3
         self.debris_tris = [(p1, p2, p4), (p1, p3, p4)]
 
-    def eval(self, vector, *args, **kwargs):
+    def eval(self, vector: tuple[float, float, float], *args, **kwargs) -> tuple[float, float, float]:
         """
         Applies random vertical (z) noise error processing to an [x y z] vector
         Args:
@@ -139,7 +140,7 @@ class FalseBottom(ErrorType):
 
 
 class Dropout(ErrorType):
-    def __init__(self, error_rate, drop_off_rate=0.02, *args, **kwargs):
+    def __init__(self, error_rate: float, drop_off_rate=0.02, *args, **kwargs):
         """
         Adds a random chance of a sensor failing, with a stochastic falloff
 
@@ -167,7 +168,7 @@ class Dropout(ErrorType):
 
         return drop_off_chance
 
-    def eval(self, vector, seed=None, *args, **kwargs):
+    def eval(self, vector: tuple[float, float, float], seed=None, *args, **kwargs) -> tuple[float, float, float]:
         """
         Randomly, according to its error rate instantiation, causes a sensor dropout
         Args:

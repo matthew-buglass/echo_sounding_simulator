@@ -1,3 +1,6 @@
+"""
+Defines how data can be emitted from the program.
+"""
 import abc
 import json
 
