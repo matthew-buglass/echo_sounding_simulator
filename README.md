@@ -108,7 +108,7 @@ you would like. If no errors are declared, then the resulting data will be the t
 #### Noise
 All sensors have a noise profile associated with their readings. In this simulator, we assume the noise is Normally 
 distributed around the true depth with a percent standard deviation equal to one-third of the provided value. 
-For example, if you were to use `-e noise@0.1`, then the noise profile of the sensor would $\pm 10%$ around the ture
+For example, if you were to use `-e noise@0.1`, then the noise profile of the sensor would $\pm$10% around the ture
 depth at three standard deviations.
 
 #### False Bottom
